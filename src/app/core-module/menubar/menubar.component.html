@@ -1,0 +1,26 @@
+<mat-toolbar>
+  <span class="mt-gap-left">
+    <a [routerLink]="['/']">
+      <img src="assets/img/home_logo.png"></a>
+  </span>
+  <span class="mt-filler"></span>
+
+  <span class="p-3">
+    <div class="top-menu" *ngIf="this.userSession.loggedIn===true">
+      <ejs-tooltip id='tooltip' content='Prijavljeni ste kao: {{this.userSession.role}}' target="#sessEmail">
+        <a class="nav-link text-primary" id="sessEmail" [routerLink]="['/login', 'changerole']" [routerLinkActive]="['active']">
+          {{this.userSession.email}} : {{this.userSession.role}}</a>
+      </ejs-tooltip>
+    </div>
+  </span>
+  <span> <button ejs-button cssClass="e-danger e-outline" (click)="onLogout()" *ngIf="this.userSession.loggedIn">Odjava
+    </button>
+  </span>
+</mat-toolbar>
+<div class="control-section menubar">
+  <div class="toolbar-menu-control">
+    <div id="mainMenu">
+      <ejs-menu id='menuDef' #menuDef [items]='menuDataDefault' (select)='select($event)'></ejs-menu>
+    </div>
+  </div>
+</div>

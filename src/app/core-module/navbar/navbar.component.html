@@ -1,0 +1,128 @@
+<nav class="navbar navbar-expand navbar-light navbar-fixed-top navbar-static-top" style="background-color: #f0e798;">
+
+  <div class="navbar-header">
+    <!-- <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+              </button> -->
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo03"
+      aria-controls="navbarTogglerDemo03" aria-expanded="false" aria-label="Toggle navigation"
+      >
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <a class="navbar-brand" [routerLink]="['/']">
+      <img src="assets/img/bhrt_logo.png"></a>
+
+
+    <button mat-button [routerLink]="['/login']" *ngIf="this.userSession.loggedIn!==true">Prijava</button>
+
+  </div>
+
+  <div class="collapse navbar-collapse" id="navbarSupportedContentUpo" *ngIf="this.userSession.role==='uposlenik'">
+    <ul class="nav navbar-nav mr-auto">
+      <!-- <li class="nav-item"> <a class="nav-link" [routerLink]="['/login']">Login</a> </li>    -->
+      <li class="nav-item dropdown">
+          <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+            aria-expanded="false">Priprema <span class="caret"></span></a>
+          <ul class="mr-auto dropdown-menu"  style="background-color: #f0ebcef5;">
+              <li class="dropdown-item"> <a class="nav-link" [routerLink]="['/upo_priprema','byemp']" [routerLinkActive]="['active']">Otvaranje putnog naloga</a> </li>
+                <li class="dropdown-item"> <a class="nav-link" [routerLink]="['/upo_aktivni','byemp']" [routerLinkActive]="['active']">Aktivni
+                  nalozi</a> </li>
+            <li class="dropdown-item"><a class="nav-link"  href="#">Something else here</a></li>
+          </ul>
+        </li>      
+      <li> <a class="nav-link" [routerLink]="['/upo_aktivni','byemp']" [routerLinkActive]="['active']">Aktivni
+          nalozi</a> </li>
+      <li> <a class="nav-link" [routerLink]="['/upo_obracun','byemp']" [routerLinkActive]="['active']">Obračun</a> </li>
+      <li class="nav-item dropdown">
+        <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+          aria-expanded="false">Dropdown <span class="caret"></span></a>
+        <ul class="mr-auto dropdown-menu"  style="background-color: #f0ebced8;">
+          <li class="dropdown-item"><a class="nav-link" href="#">Action</a></li>
+          <li class="dropdown-item"><a class="nav-link" href="#">Another action</a></li>
+          <li class="dropdown-item"><a class="nav-link"  href="#">Something else here</a></li>
+        </ul>
+      </li>
+      <!-- <li class="nav-item"> <a class="nav-link" [routerLink]="['/potpis','byemp']" [routerLinkActive]="['active']">Potpis</a> </li>               -->
+      <!-- <li class="nav-item"> <a class="nav-link" [routerLink]="['/pdfviewer']" [routerLinkActive]="['active']">PdfViewer</a> </li>           -->
+    </ul>
+  </div>
+  <div class="collapse navbar-collapse" id="navbarSupportedContentUpo" *ngIf="this.userSession.role==='producent'">
+    <ul class="navbar-nav mr-auto">
+      <!-- <li class="nav-item"> <a class="nav-link" [routerLink]="['/login']">Login</a> </li>    -->
+      <li class="nav-item"> <a class="nav-link" [routerLink]="['/pro_priprema','byuser']"
+          [routerLinkActive]="['active']">Priprema naloga</a> </li>
+    </ul>
+  </div>
+  <div class="collapse navbar-collapse" id="navbarSupportedContentRuk" *ngIf="this.userSession.role==='rukovodilac'">
+    <ul class="navbar-nav mr-auto">
+      <!-- <li class="nav-item"> <a class="nav-link" [routerLink]="['/login']">Login</a> </li>    -->
+      <li class="nav-item"> <a class="nav-link" [routerLink]="['/upo_priprema','byorg']"
+          [routerLinkActive]="['active']">Priprema naloga</a> </li>
+      <li class="nav-item"> <a class="nav-link" [routerLink]="['/upo_priprema','bypg']"
+          [routerLinkActive]="['active']">Priprema naloga - poslovne grupe</a> </li>
+      <li class="nav-item"> <a class="nav-link" [routerLink]="['/']" [routerLinkActive]="['active']">Nalozi za
+          potpis</a> </li>
+      <li class="nav-item"> <a class="nav-link" [routerLink]="['/ruk_aktivni']" [routerLinkActive]="['active']">Aktivni
+          nalozi</a> </li>
+      <li class="nav-item"> <a class="nav-link" [routerLink]="['/putnalitem']" [routerLinkActive]="['active']">Troškovi
+          i izvještaj</a> </li>
+    </ul>
+  </div>
+  <div class="collapse navbar-collapse" id="navbarSupportedContentBla" *ngIf="this.userSession.role==='blagajna'">
+    <ul class="navbar-nav mr-auto">
+      <!-- <li class="nav-item"> <a class="nav-link" [routerLink]="['/login']">Login</a> </li>    -->
+      <li class="nav-item"> <a class="nav-link" [routerLink]="['/']" [routerLinkActive]="['active']">Odobreni nalozi
+          (akontacije)</a> </li>
+      <li class="nav-item"> <a class="nav-link" [routerLink]="['/ruk_aktivni']"
+          [routerLinkActive]="['active']">Obračunati nalozi (za pravdanje)</a> </li>
+      <li class="nav-item"> <a class="nav-link" [routerLink]="['/putnalitem']"
+          [routerLinkActive]="['active']">Arhivirani nalozi</a> </li>
+    </ul>
+  </div>
+  <div class="collapse navbar-collapse" id="navbarSupportedContentLik" *ngIf="this.userSession.role==='likvidatura'">
+    <ul class="navbar-nav mr-auto">
+      <!-- <li class="nav-item"> <a class="nav-link" [routerLink]="['/login']">Login</a> </li>    -->
+      <li class="nav-item"> <a class="nav-link" [routerLink]="['/']" [routerLinkActive]="['active']">Nalozi za
+          obračun</a> </li>
+      <li class="nav-item"> <a class="nav-link" [routerLink]="['/ruk_aktivni']"
+          [routerLinkActive]="['active']">Obračunati nalozi</a> </li>
+      <li class="nav-item"> <a class="nav-link" [routerLink]="['/putnalitem']" [routerLinkActive]="['active']">Opravdani
+          i arhivirani nalozi</a> </li>
+    </ul>
+  </div>
+  <div class="collapse navbar-collapse" id="navbarSupportedContentLik" *ngIf="this.userSession.role==='uprava'">
+    <ul class="navbar-nav mr-auto">
+      <!-- <li class="nav-item"> <a class="nav-link" [routerLink]="['/login']">Login</a> </li>    -->
+      <li class="nav-item"> <a class="nav-link" [routerLink]="['/potpis','byorg']"
+          [routerLinkActive]="['active']">Potpis</a> </li>
+      <li class="nav-item"> <a class="nav-link" [routerLink]="['/ruk_aktivni']"
+          [routerLinkActive]="['active']">Obračunati nalozi</a> </li>
+    </ul>
+  </div>
+  <!-- <div class="collapse navbar-collapse" id="navbarSupportedContentLik">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item"> <a class="nav-link" [routerLink]="['/putnalizv']"
+          [routerLinkActive]="['active']">Izvještaj</a> </li>
+    </ul>
+  </div> -->
+  <!-- <div  class="collapse navbar-collapse">
+    <a class="navbar-brand" [routerLink]="['/login']">
+      <small class="navbar-text" *ngIf="this.userSession.loggedIn===true">
+        {{this.userSession.email}} kao {{this.userSession.role}}
+      </small></a>
+  </div> -->
+  <div>
+    <button mat-button (click)="onLogout()" *ngIf="this.userSession.loggedIn">Odjava</button>
+  </div>
+  <div class="collapse navbar-collapse" id="navbarSupportedContentUpo" *ngIf="this.userSession.loggedIn===true">
+      <ul class="navbar-nav mr-auto">
+          <!-- <li class="nav-item"> <a class="nav-link" [routerLink]="['/login']">Login</a> </li>    -->
+          <li class="nav-item"> <a class="nav-link" [routerLink]="['/login']"
+              [routerLinkActive]="['active']">      <small class="navbar-text" *ngIf="this.userSession.loggedIn===true">
+                  {{this.userSession.email}} kao {{this.userSession.role}}
+                </small></a> </li>
+        </ul>
+  </div>
+
+</nav>

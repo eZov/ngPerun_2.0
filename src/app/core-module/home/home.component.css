@@ -1,0 +1,69 @@
+  /* Absolute Center Spinner */
+  
+  .loading-indicator {
+      position: fixed;
+      z-index: 999;
+      height: 2em;
+      width: 2em;
+      overflow: show;
+      margin: auto;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      right: 0;
+  }
+  /* Transparent Overlay */
+  
+  .loading-indicator:before {
+      content: '';
+      display: block;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.3);
+  }
+  
+  #ddlIdle {
+      display: inline-block;
+  }
+  
+  .e-control.e-dropdownlist .inlinecss.e-ddl .e-input-group-icon.e-ddl-icon {
+      display: none;
+  }
+  
+  .e-control.e-dropdownlist .inlinecss.e-ddl .e-input {
+      font-size: 17px;
+      font-weight: 500;
+      margin: -8px 0px 0px 0px;
+      padding: 0px;
+  }
+  
+  .material .e-control.e-dropdownlist .inlinecss.e-ddl .e-input {
+      margin: 2px 0px 0px 0px;
+      ;
+  }
+  
+  .bootstrap .e-control.e-dropdownlist .inlinecss.e-ddl .e-input {
+      margin: -4px 0px 0px 0px;
+  }
+  
+  #contentText .e-input-group.e-control-wrapper.e-ddl::before,
+  #contentText .e-input-group.e-control-wrapper.e-ddl::after {
+      content: none;
+      font-size: medium;
+  }
+  
+  #contentText .e-input-group.e-control-wrapper.e-ddl,
+  #contentText .e-input-group.e-control-wrapper.e-ddl:hover,
+  #contentText .e-input-group.e-ddl.e-input-focus,
+  #contentText .e-input-group.e-ddl.e-input-focus::before,
+  #contentText .e-input-group.e-ddl.e-input-focus::after {
+      border-width: 0px;
+      border: none;
+      border-bottom: 1px dashed black;
+      box-shadow: none;
+      margin-top: 1px;
+      text-align: center;
+  }

@@ -1,0 +1,27 @@
+.mrgbtm {
+    margin-top: 40px;
+}
+
+
+/* global styling for sticky footer*/
+
+html,
+body,
+app-root {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.footer {
+    background-color: #ddd;
+    border-top: 1px solid #bbb;
+    text-align: center;
+    /* line-height: 50px; */
+}
+
+.container{
+    padding-right: 0px;
+    padding-left:  0px;
+    /* max-width: 1340px; */
+}

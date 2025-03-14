@@ -1,0 +1,76 @@
+<div class="container">
+    <div class="loading-indicator" *ngIf="showLoader">
+        <mat-spinner></mat-spinner>
+    </div>
+    <div class="row  align-items-center" *ngIf="usersession.loggedIn != true">
+        <div class="col-sm-4"></div>
+        <div class="col-sm-4 h-100  bg-light d-table p-2">
+            <div class="card card-body bg-light d-table-cell align-middle">
+                <h5>Prijavite se sa svojim računom</h5>
+            </div>
+        </div>
+        <div class="col-sm-4"></div>
+    </div>
+    <div class="row align-items-center" *ngIf="usersession.loggedIn != true">
+        <div class="col-sm-4"></div>
+        <div class=" col-sm-4 bg-warning mt-2 p-2 text-center text-white" *ngIf="errorMessage != null">
+            {{errorMessage}}
+        </div>
+        <div class="col-sm-4"></div>
+    </div>
+    <div class="row align-items-center" *ngIf="usersession.loggedIn != true">
+        <div class="col-sm-4"></div>
+        <div class="col-sm-4  h-100 d-table p-2">
+            <form novalidate #form="ngForm" (ngSubmit)="authenticate(form)">
+                <div class="form-group">
+                    <label>Korisničko ime</label>
+                    <input class="form-control" name="username" [(ngModel)]="username" required />
+                </div>
+                <div class="form-group">
+                    <label>Lozinka</label>
+                    <input class="form-control" type="password" name="password" [(ngModel)]="password" required />
+                </div>
+                <div class="text-center">
+                    <button class="btn btn-secondary m-1" routerLink="/">Početna stranica</button>
+                    <button class="btn btn-primary m-1" type="submit">Prijava</button>
+                </div>
+            </form>
+        </div>
+        <div class="col-sm-4"></div>
+    </div>
+
+    <div class="row align-items-center" *ngIf="usersession.loggedIn === true">
+
+        <div class="col-sm-4"></div>
+        <div class="col-sm-4" *ngIf="this.cardHtml === 'changerole'">
+            <div class="e-card" style="max-width:400px">
+                <div class="e-card-header-title">Promjena uloge</div>
+                <div class="e-card-content">
+                    <ejs-dropdownlist id='ddlelement' #ddlelement [dataSource]='userRoles' [(value)]='currentRole' placeholder='Odaberite ulogu'>
+                    </ejs-dropdownlist>
+                </div>
+                <div class="e-card-actions e-card-vertical">
+                    <button class="btn btn-primary m-2" (click)="changeRole()">Promijeni ulogu</button>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-4"></div>
+
+    </div>
+    <div class="row align-items-center" *ngIf="usersession.loggedIn === true">
+
+        <div class="col-sm-4"></div>
+        <div class="col-sm-4" *ngIf="this.cardHtml === 'password'">
+            <div class="e-card" style="max-width:400px">
+                <div class="e-card-header-title">Promjena lozinke</div>
+                <div class="e-card-content">
+
+                </div>
+                <div class="e-card-actions e-card-vertical">
+                    <button class="btn btn-primary m-2" (click)="changePassword()">Promijeni lozinku</button>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-4"></div>
+    </div>
+</div>
