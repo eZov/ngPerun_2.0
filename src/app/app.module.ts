@@ -34,15 +34,15 @@ import { AppComponent } from './app.component';
 
 
 import { WINDOW_PROVIDERS } from './window.providers';
-import { LocationService } from './core-module/location.service';
+import { LocationService } from './core-module/services/location.service';
 
 import { AuthGuardService } from './shared/auth-guard.service';
 import { RoleGuardService } from './shared/role-guard.service';
-import { AuthService } from './core-module/auth.service';
+import { AuthService } from './core-module/services/auth.service';
 import { EmployeeService } from './shared/employee.service';
 //import { RestDataSource, REST_URL } from './shared/rest.datasource';
 import { RestDataSource } from './shared/rest.datasource';
-import { LoaderService } from './core-module/loader.service';
+import { LoaderService } from './core-module/services/loader.service';
 
 import { EvidDnevnikService } from './services/evid-dnevnik.service';
 
@@ -58,7 +58,6 @@ import { TooltipModule, DialogModule  } from '@syncfusion/ej2-angular-popups';
 import { ToastModule } from '@syncfusion/ej2-angular-notifications';
 
 
-import { MenubarComponent } from './core-module/menubar/menubar.component';
 
 import { AktivnostService } from './shared/aktivnost.service';
 

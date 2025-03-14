@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
 import { Observable, of, Subject, pipe, switchMap } from 'rxjs';
-import { RestDataSource } from "../shared/rest.datasource";
+import { RestDataSource } from "../../shared/rest.datasource";
 import { JwtHelperService } from '@auth0/angular-jwt';
 import { HttpCoreService } from './http-core.service';
 import { UserSessionService } from './user-session.service';
 import { AppJwtService } from './app-jwt.service';
-import { AppService } from '../services/app.service';
+import { AppService } from '../../services/app.service';
 import { TokenService } from './token.service';
 
 const jwtHelper = new JwtHelperService();

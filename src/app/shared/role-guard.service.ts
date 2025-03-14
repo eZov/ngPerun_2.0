@@ -4,10 +4,10 @@ import {
   CanActivate,
   ActivatedRouteSnapshot
 } from '@angular/router';
-import { AuthService } from '../core-module/auth.service';
+import { AuthService } from '../core-module/services/auth.service';
 import decode from 'jwt-decode';
 import { RestDataSource } from './rest.datasource';
-import { AppJwtService } from '../core-module/app-jwt.service';
+import { AppJwtService } from '../core-module/services/app-jwt.service';
 
 @Injectable({
   providedIn: 'root'

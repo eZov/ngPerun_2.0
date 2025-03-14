@@ -1,5 +1,5 @@
 import { Injectable, Inject } from '@angular/core';
-import { WINDOW } from '../window.providers';
+import { WINDOW } from '../../window.providers';
 
 @Injectable()
 export class LocationService {

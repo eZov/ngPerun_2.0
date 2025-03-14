@@ -11,10 +11,10 @@ import { BsModalRef } from 'ngx-bootstrap/modal';
 import { ModalDirective } from 'ngx-bootstrap/modal';
 import { AppService } from './services/app.service';
 // import { UserSessionService } from './services/user-session.service';
-import { AuthService } from './core-module/auth.service';
-import { MenuService } from './core-module/menu.service';
-import { LoaderService } from './core-module/loader.service';
-import { UserSessionService } from './core-module/user-session.service';
+import { AuthService } from './core-module/services/auth.service';
+import { MenuService } from './core-module/services/menu.service';
+import { LoaderService } from './core-module/services/loader.service';
+import { UserSessionService } from './core-module/services/user-session.service';
 // import { PutnalWorkflowService } from './services/putnal-workflow.service';
 
 @Component({

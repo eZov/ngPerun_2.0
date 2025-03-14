@@ -3,11 +3,11 @@ import { Resolve, ActivatedRouteSnapshot } from '@angular/router';
 import { DomSanitizer } from '@angular/platform-browser';
 import { Observable, Subject } from "rxjs";
 
-import { UserSessionService } from '../core-module/user-session.service';
+import { UserSessionService } from '../core-module/services/user-session.service';
 import { RestDataSource } from '../shared/rest.datasource';
 
 import { ECertificate } from '../model/e-certificate.model';
-import { LoaderService } from '../core-module/loader.service';
+import { LoaderService } from '../core-module/services/loader.service';
 import { isUndefined } from 'util';
 
 

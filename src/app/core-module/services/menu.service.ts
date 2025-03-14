@@ -4,9 +4,9 @@ import { ActivatedRouteSnapshot, RouterStateSnapshot, Router, ActivatedRoute } f
 import { Observable, Subject } from "rxjs";
 import { MenuItemModel, MenuEventArgs, ToolbarComponent, MenuComponent } from '@syncfusion/ej2-angular-navigations';
 
-import { RestDataSource } from "../shared/rest.datasource";
-import { PutnalDetail } from "../model/putnaldetail.model";
-import { Putnal } from "../model/putnal.model";
+import { RestDataSource } from "../../shared/rest.datasource";
+import { PutnalDetail } from "../../model/putnaldetail.model";
+import { Putnal } from "../../model/putnal.model";
 import { UserSessionService } from './user-session.service';
 import { LoaderService } from './loader.service';
 

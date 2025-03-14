@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
-import { APIversion } from '../model/api-version.model';
-import { RestDataSource } from '../shared/rest.datasource';
+import { APIversion } from '../../model/api-version.model';
+import { RestDataSource } from '../../shared/rest.datasource';
 
 @Injectable({
   providedIn: 'root'

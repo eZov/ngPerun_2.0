@@ -1,10 +1,10 @@
 import { NgModule } from "@angular/core";
 import { Routes, RouterModule } from "@angular/router";
-import { HomeComponent }  from "./core-module/home/home.component";
-import { LoginComponent } from "./core-module/login/login.component";
+import { HomeComponent }  from './core-module/components/home/home.component';
+import { LoginComponent } from "./core-module/components/login/login.component";
 import { AuthGuardService as AuthGuard } from "./shared/auth-guard.service";
 import { RoleGuardService as RoleGuard } from "./shared/role-guard.service";
-import { NotDevelopedComponent } from "./core-module/notDeveloped.component";
+import { NotDevelopedComponent } from "./core-module/components/notDeveloped.component";
 
 const routes: Routes = [
   { path: "", component: HomeComponent },

@@ -1,19 +1,16 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { NgForm } from "@angular/forms";
 import { Router, ActivatedRoute } from '@angular/router';
-import { AuthService } from '../auth.service';
-import { RestDataSource } from '../../shared/rest.datasource';
+import { AuthService } from '../../services/auth.service';
 import { DropDownListComponent } from '@syncfusion/ej2-angular-dropdowns';
-import { UserSessionService } from '../user-session.service';
-import { LoaderService } from '../loader.service';
+import { UserSessionService } from '../../services/user-session.service';
+import { LoaderService } from '../../services/loader.service';
 
 import { SidebarComponent } from '@syncfusion/ej2-angular-navigations';
-import { AppService } from '../../services/app.service';
 import { CookieService } from 'ngx-cookie-service';
-import { MenuService } from '../menu.service';
+import { MenuService } from '../../services/menu.service';
 
-import { AppJwtService } from '../app-jwt.service';
-import { User } from '../user.model';
+import { User } from '../../user.model';
 
 
 

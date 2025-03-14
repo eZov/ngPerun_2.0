@@ -3,10 +3,9 @@ import { enableRipple } from '@syncfusion/ej2-base';
 import { MenuItemModel, MenuEventArgs, ToolbarComponent, MenuComponent } from '@syncfusion/ej2-angular-navigations';
 import { TooltipModule } from '@syncfusion/ej2-angular-popups';
 import { Router } from '@angular/router';
-import { UserSessionService } from '../user-session.service';
-import { AuthService } from '../auth.service';
-import { LoaderService } from '../loader.service';
-import { MenuService } from '../menu.service';
+import { UserSessionService } from '../../services/user-session.service';
+import { LoaderService } from '../../services/loader.service';
+import { MenuService } from '../../services/menu.service';
 
 
 

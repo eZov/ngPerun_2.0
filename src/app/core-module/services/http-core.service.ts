@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { map, Observable } from 'rxjs';
-import { EnvService } from '../env.service';
+import { EnvService } from '../../env.service';
 import { TokenService } from './token.service';
 
 const PROTOCOL = "https";

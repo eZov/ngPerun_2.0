@@ -32,36 +32,16 @@ import { GridAllModule, GridModule, PageService, SortService, FilterService, Gro
   SearchService, PagerModule } from '@syncfusion/ej2-angular-grids';
 import { TooltipModule, DialogModule  } from '@syncfusion/ej2-angular-popups';
 import { ToastModule } from '@syncfusion/ej2-angular-notifications';
-
-import { HomeComponent }  from './components/home/home.component';
-import { FooterComponent }  from './components/footer/footer.component';
-import { NavbarComponent } from './components//navbar/navbar.component';
-import { LoginComponent } from './components/login/login.component';
-import { MenubarComponent } from './components/menubar/menubar.component';
-import { Routes, RouterModule } from "@angular/router";
-import { NotFoundComponent } from './components/notFound.component';
-import { NotDevelopedComponent } from './components/notDeveloped.component';
+import { RouterModule } from '@angular/router';
 
 
 
 @NgModule({
   declarations: [
-    HomeComponent,
-    FooterComponent,
-    NavbarComponent,
-    LoginComponent,
-    MenubarComponent,
-    NotFoundComponent, 
-    NotDevelopedComponent         
+      
   ],
   exports: [
-    HomeComponent,
-    FooterComponent,
-    NavbarComponent,
-    LoginComponent,
-    MenubarComponent,
-    NotFoundComponent, 
-    NotDevelopedComponent              
+        
   ],  
   imports: [
     BrowserModule,
