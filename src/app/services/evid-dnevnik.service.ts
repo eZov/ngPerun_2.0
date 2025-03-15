@@ -62,7 +62,7 @@ export class EvidDnevnikService {
     let _empid =
       route.params["empid"] != undefined
         ? route.params["empid"]
-        : this.usersession.empId;
+        : this.usersession.user.empId;
     let _MM: number =
       route.params["mm"] != undefined ? route.params["mm"] : _dt.getMonth() + 1;
     let _YYYY: number =
@@ -90,7 +90,7 @@ export class EvidDnevnikService {
         ? "Dnevnik rada i odsustva "
         : "Evidencije ( Plan / Realizacija ) ";
 
-    return this.usersession.role === "uposlenik"
+    return this.usersession.user.role === "uposlenik"
       ? _title
       : "Kontrola dnevnika rada i odsustva za: ";
   }
@@ -195,7 +195,7 @@ export class EvidDnevnikService {
       enabled: true,
     };
 
-    switch (this.usersession.role) {
+    switch (this.usersession.user.role) {
       case "uposlenik": {
         if (_el.locked_ext == false && _el.evd_podnio == 0) {
           _btnPodnesi.enabled = true;

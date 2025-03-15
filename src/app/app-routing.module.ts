@@ -5,6 +5,7 @@ import { LoginComponent } from "./core-module/components/login/login.component";
 import { AuthGuardService as AuthGuard } from "./shared/auth-guard.service";
 import { RoleGuardService as RoleGuard } from "./shared/role-guard.service";
 import { NotDevelopedComponent } from "./core-module/components/notDeveloped.component";
+import { AppRole } from "./app-roles";
 
 const routes: Routes = [
   { path: "", component: HomeComponent },
@@ -16,7 +17,7 @@ const routes: Routes = [
     path: "login/:mode",
     component: LoginComponent,
     data: {
-      expectedRole: ["uposlenik"],
+      expectedRole: [AppRole.Uposlenik],
     },
   },
   {

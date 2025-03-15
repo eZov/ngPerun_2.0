@@ -43,7 +43,7 @@ export class EpotpisService {
   resolve(route: ActivatedRouteSnapshot): Observable<any> {
 
     let _ECertificate: ECertificate = {
-      employeeID: this.usersession.empId
+      employeeID: this.usersession.user.empId
     };
 
     return this.restDataSource.getEcertStatus(_ECertificate);
@@ -54,7 +54,7 @@ export class EpotpisService {
     // API ec-C1 
     //
     this.path = {
-      saveUrl: this.restDataSource.baseUrl + 'ecertimgins?pEmployeeID=' + this.usersession.empId.toString()
+      saveUrl: this.restDataSource.baseUrl + 'ecertimgins?pEmployeeID=' + this.usersession.user.empId.toString()
     };
 
   }
@@ -62,9 +62,9 @@ export class EpotpisService {
   delImg() {
     // API ec-D1 
     //
-    console.log('Delete image in service...' + this.usersession.empId);
+    console.log('Delete image in service...' + this.usersession.user.empId);
 
-    this.restDataSource.delEcertImg(this.usersession.empId)
+    this.restDataSource.delEcertImg(this.usersession.user.empId)
       .subscribe((result) => {
         console.log('Delete image in service finished...' + result);
         this.getStatus();
@@ -79,7 +79,7 @@ export class EpotpisService {
   getStatus() {
 
     let _ECertificate: ECertificate = {
-      employeeID: this.usersession.empId
+      employeeID: this.usersession.user.empId
     };
     this.restDataSource.getEcertStatus(_ECertificate)
       .subscribe((result: ECertificate) => {
@@ -165,7 +165,7 @@ export class EpotpisService {
 
   getImg() {
     this._isImageLoading.next(true);
-    this.restDataSource.getEcertImg(this.usersession.empId).subscribe((data: any) => {
+    this.restDataSource.getEcertImg(this.usersession.user.empId).subscribe((data: any) => {
 
       //let objectURL = 'data:image/jpeg;base64,' + data.image;
       //this.imageToShow = this.sanitizer.bypassSecurityTrustUrl(objectURL);    
@@ -206,7 +206,7 @@ export class EpotpisService {
     //      ovi podaci su vezani uz organizaciju  
 
     let _ECertificate: ECertificate = {
-      employeeID: this.usersession.empId,
+      employeeID: this.usersession.user.empId,
       subjectCN: "BHRT elektronski potpis",
       issuerCN: "BHRT issuer",
       password: _password,

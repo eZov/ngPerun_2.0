@@ -3,6 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { map, Observable } from 'rxjs';
 import { EnvService } from '../../env.service';
 import { TokenService } from './token.service';
+import { AppRole } from '../../app-roles';
 
 const PROTOCOL = "https";
 const PORT = 443;
@@ -36,7 +37,7 @@ export class HttpCoreService {
       .post<any>(this.baseUrl + "login", {
         email: user,
         password: pass,
-        role: "uposlenik",
+        role: AppRole.Uposlenik,
       });
   }
 
@@ -44,7 +45,7 @@ export class HttpCoreService {
     return this.http.get<T>(apiUrl, this.getOptions());
   }
 
-  postData<T>(apiUrl: string,data: T): Observable<T> {
+  postData<T>(apiUrl: string, data: any): Observable<T> {
     return this.http.post<T>(apiUrl, data, this.getOptions());
   }
 }

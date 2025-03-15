@@ -1,20 +1,26 @@
 import { Injectable } from "@angular/core";
 import { AuthService } from './auth.service';
+import { BehaviorSubject, Observable, Subject } from "rxjs";
+import { User } from "../user.model";
+import { AppRole } from "../../app-roles";
 
 @Injectable({
   providedIn: "root",
 })
 export class UserSessionService {
 
-  public email: string = "";
-  public role: string = "";
-  public subrole: string = "";
+  private loggedIn = new BehaviorSubject<boolean>(false);
+  private userSubj = new BehaviorSubject<User>(new User());
+
+  public user: User = new User();
+
+
   public empId: number = -1;
   public workstation: number = -1;
 
   public idleTime: number = 300;
 
-  public loggedIn: boolean = false;
+
   public menuData!: { [key: string]: Object }[];
 
   public unosNaloga: boolean = false;
@@ -39,7 +45,7 @@ export class UserSessionService {
   public odobSpNalog: number = 0;
 
   //HACK: Ovi parametri bi trebali biti univerzalni za bilo koju grid tabelu usera
-  //      Key se uzima prema nzivu komponente: this.usersession.gridSelectedRowIndex["evid_kontrola"]
+  //      Key se uzima prema nzivu komponente: this.gridSelectedRowIndex["evid_kontrola"]
   //      Ukoliko ima više gridova, index formirati dodavanjem -1, -2 itd: ["evid_kontrola-1"], ["evid_kontrola-2"]
   public gridSelectedRowIndex: { [key: string]: number } = {};
   public gridCurrentPage: { [key: string]: number } = {};
@@ -64,6 +70,26 @@ export class UserSessionService {
     console.log("UserSession constructor 454: " + this.apiDays);
   }
 
+  setLoggedIn(userLoggedIn: boolean) {
+    this.loggedIn.next(userLoggedIn);
+    console.log("menubar user-session-service 1" + JSON.stringify(this.user));
+    //this.userSubj.next(this.user);
+  }
+
+  getLoggedIn(): Observable<boolean> {
+    return this.loggedIn.asObservable();
+  }
+
+  setUser(user: User) {
+    this.user = user;
+    this.userSubj.next(user);
+  }
+
+  getUser(): Observable<User> {
+    return this.userSubj.asObservable();
+  }
+
+
   changeSpNalogStatus(newStatus: string) {
     this.selectedSpNalogStatus = newStatus;
   }
@@ -76,11 +102,6 @@ export class UserSessionService {
     this.selectedPage = newNalogsSelPage;
   }
 
-  logout() {
-    // this.auth.logout();
-    this.role = '';
-    this.loggedIn = false;
-  }
 
   navigateUrl(url: string) {
     this.urlPrev = this.url;
@@ -88,5 +109,45 @@ export class UserSessionService {
     console.log(
       "UserSession navigateUrl url: " + this.url + "  url-prev: " + this.urlPrev
     );
+  }
+
+  changeSetPerRole() {
+
+    switch (this.user.role) {
+      case AppRole.Blagajna:
+      case AppRole.Uposlenik: {
+        this.unosNaloga = false;
+        this.apiList = -1;
+        break;
+      }
+      case AppRole.Likvidatura:
+      case AppRole.Rukovodilac: {
+        this.unosNaloga = true;
+        this.apiList = -1;
+        break;
+      }
+      case AppRole.Sekretarica:
+      case AppRole.Producent: {
+        this.unosNaloga = true;
+        this.apiList = this.empId;
+        break;
+      }
+      case AppRole.Direkcija: {
+        this.unosNaloga = true;
+        this.apiList = -1;
+        break;
+      }
+      case AppRole.Uprava: {
+        this.unosNaloga = true;
+        this.apiList = -1;
+        break;
+      }
+      default: {
+        //statements; 
+        break;
+      }
+    }
+
+    this.nalogsPerPage = 15;
   }
 }

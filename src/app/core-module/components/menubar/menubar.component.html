@@ -6,14 +6,14 @@
   <span class="mt-filler"></span>
 
   <span class="p-3">
-    <div class="top-menu" *ngIf="this.userSession.loggedIn===true">
-      <ejs-tooltip id='tooltip' content='Prijavljeni ste kao: {{this.userSession.role}}' target="#sessEmail">
+    <div class="top-menu" *ngIf="loggedIn">
+      <ejs-tooltip id='tooltip' content='Prijavljeni ste kao: {{role}}' target="#sessEmail">
         <a class="nav-link text-primary" id="sessEmail" [routerLink]="['/login', 'changerole']" [routerLinkActive]="['active']">
-          {{this.userSession.email}} : {{this.userSession.role}}</a>
+          {{ email }} : {{ role }}</a>
       </ejs-tooltip>
     </div>
   </span>
-  <span> <button ejs-button cssClass="e-danger e-outline" (click)="onLogout()" *ngIf="this.userSession.loggedIn">Odjava
+  <span> <button ejs-button cssClass="e-danger e-outline" (click)="onLogout()" *ngIf="loggedIn">Odjava
     </button>
   </span>
 </mat-toolbar>

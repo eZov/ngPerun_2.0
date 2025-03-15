@@ -35,7 +35,7 @@ import { ToastModule } from '@syncfusion/ej2-angular-notifications';
 
 import { HomeComponent }  from './components/home/home.component';
 import { FooterComponent }  from './components/footer/footer.component';
-import { NavbarComponent } from './components//navbar/navbar.component';
+// import { NavbarComponent } from './components//navbar/navbar.component';
 import { LoginComponent } from './components/login/login.component';
 import { MenubarComponent } from './components/menubar/menubar.component';
 import { Routes, RouterModule } from "@angular/router";
@@ -48,7 +48,7 @@ import { NotDevelopedComponent } from './components/notDeveloped.component';
   declarations: [
     HomeComponent,
     FooterComponent,
-    NavbarComponent,
+    // NavbarComponent,
     LoginComponent,
     MenubarComponent,
     NotFoundComponent, 
@@ -57,7 +57,7 @@ import { NotDevelopedComponent } from './components/notDeveloped.component';
   exports: [
     HomeComponent,
     FooterComponent,
-    NavbarComponent,
+    // NavbarComponent,
     LoginComponent,
     MenubarComponent,
     NotFoundComponent, 

@@ -16,6 +16,10 @@ export class HomeComponent implements OnInit {
   //public userSession: UserSession;
   showLoader!: boolean;
 
+  public loggedIn: boolean = false;
+  public email: string = '';
+  public role: string = '';
+
   public data: { [key: string]: Object }[] = [
     { Name: '5 minuta', Id: 300 },
     { Name: '10 minuta', Id: 600 },    
@@ -35,7 +39,7 @@ public width: string = '100px';
 public popupWidth: string = '100px';
 
   constructor(   
-    public userSession: UserSessionService,
+    public userSessionService: UserSessionService,
     private loaderService: LoaderService,
     private cookieService: CookieService,
     private locationService: LocationService 
@@ -54,6 +58,16 @@ public popupWidth: string = '100px';
       this.showLoader = val;
     });
 
+    this.userSessionService.getLoggedIn().subscribe(loggedIn => {
+      this.loggedIn = loggedIn;
+      console.log("menubar-constructor appService: " + loggedIn);
+    })
+
+    this.userSessionService.getUser().subscribe(user => {
+      this.role = user.role;
+      this.email = user.email;
+  })
+
     this.loaderService.display(false);
 
   }
@@ -61,8 +75,8 @@ public popupWidth: string = '100px';
   onSelect(args: any): void {
 
     //console.log("home: " + JSON.stringify(args.itemData));    
-    this.userSession.idleTime= args.itemData["Id"];    
-    this.cookieService.set('perun.'+ this.userSession.empId.toString(), this.userSession.idleTime.toString(), 1000, "/", this.locationService.getHostname(), false, "Lax");
+    this.userSessionService.idleTime= args.itemData["Id"];    
+    this.cookieService.set('perun.'+ this.userSessionService.user.empId.toString(), this.userSessionService.idleTime.toString(), 1000, "/", this.locationService.getHostname(), false, "Lax");
 
 }
 

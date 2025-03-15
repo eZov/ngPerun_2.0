@@ -60,7 +60,7 @@ export class EvidCalendarService {
         let _dt = this.usersession.firstDate;
         //_dt.setDate(_dt.getDate() - 6);
 
-        let _empid = route.params["empid"] != undefined ? route.params["empid"] : this.usersession.empId;
+        let _empid = route.params["empid"] != undefined ? route.params["empid"] : this.usersession.user.empId;
         let _MM: number = route.params["mm"] != undefined ? route.params["mm"] : _dt.getMonth() + 1;
         let _YYYY: number = route.params["yyyy"] != undefined ? route.params["yyyy"] : _dt.getFullYear();
 
@@ -73,7 +73,7 @@ export class EvidCalendarService {
             _YYYY = route.params["yyyy"];
         }
         this.evidCalendarWeekData = new Array<EvidCalendarWeek>();
-        this.chkSuperLock = this.usersession.role === "sekretarica" ? true : false;
+        this.chkSuperLock = this.usersession.user.role === "sekretarica" ? true : false;
 
         //console.log("EvidDnevnikService-c: " + JSON.stringify(this.evidCalendarWeekData));
 
@@ -149,8 +149,8 @@ export class EvidCalendarService {
         this._evdStop = (_el.evd_kontrolisao || 0) > 0 ? true : false;
         this._podnio = (_el.evd_podnio || 0) > 0 ? true : false;
 
-        switch (this.usersession.role) {
-            case 'uposlenik': {
+        switch (this.usersession.user.role) {
+            case AppRole.Uposlenik: {
                 this._sendButtonOn = !(this._evdLockedExt || this._podnio);
             }
             case 'sekretarica': {
@@ -165,8 +165,8 @@ export class EvidCalendarService {
 
     public sendDisable() {
 
-        switch (this.usersession.role) {
-            case 'uposlenik': {
+        switch (this.usersession.user.role) {
+            case AppRole.Uposlenik: {
 
 
                 switch (this.sendButtOn) {
@@ -443,7 +443,7 @@ export class EvidCalendarService {
                 }
             })[0];
 
-            if ((_evidDnevnik.locked === true) && (this.usersession.role === "uposlenik")) {
+            if ((_evidDnevnik.locked === true) && (this.usersession.user.role === "uposlenik")) {
                 return;
             }
 
@@ -543,7 +543,7 @@ export class EvidCalendarService {
                 })[0];
 
                 //HACK: Nadredjena evidencija - EXIT
-                if (_evidDnevnik.locked && this.usersession.role === "uposlenik") return el;
+                if (_evidDnevnik.locked && this.usersession.user.role === "uposlenik") return el;
 
                 if ((el.sifra === this._selEvid.sifra) ||
                     (el.sifra || ''.indexOf('GO') >= 0 && this._selEvid.sifra === "GO")) {
@@ -610,7 +610,7 @@ export class EvidCalendarService {
                 })[0];
 
                 //HACK: Nadredjena evidencija - EXIT
-                if (_evidDnevnik.locked && this.usersession.role === "uposlenik") return el;
+                if (_evidDnevnik.locked && this.usersession.user.role === "uposlenik") return el;
 
                 if ((el.sifra === this._selEvid.sifra) ||
                     (el.sifra || ''.indexOf('GO') >= 0 && this._selEvid.sifra === "GO")) {

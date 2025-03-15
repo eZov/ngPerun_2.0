@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Observable, of, Subject, pipe, switchMap } from 'rxjs';
+import { Observable, of, Subject, pipe, switchMap, delay } from 'rxjs';
 import { RestDataSource } from "../../shared/rest.datasource";
 import { JwtHelperService } from '@auth0/angular-jwt';
 import { HttpCoreService } from './http-core.service';
@@ -15,6 +15,12 @@ export interface AuthToken {
   token: string;
 }
 
+export interface LoginData {
+  email: string;
+  password: string;
+  role: string;
+}
+
 @Injectable()
 export class AuthService {
 
@@ -24,9 +30,8 @@ export class AuthService {
   constructor(
     private httpCoreService: HttpCoreService,
     private appJwtService: AppJwtService,
-    private appService: AppService,
     private tokenService: TokenService,
-    private usersession: UserSessionService,
+    private userSessionService: UserSessionService,
     private restDatasource: RestDataSource
   ) {
     // this.auth_token = '';
@@ -40,9 +45,11 @@ export class AuthService {
           this.tokenService.setToken(value.token);
 
           const tokenUser = this.appJwtService.userPayload(this.tokenService.getToken());
-          Object.assign(this.usersession, tokenUser);
+          //Object.assign(this.userSessionService, tokenUser);
+          console.log("AuthService.authenticate: " + JSON.stringify(tokenUser));
 
-          this.appService.setUserLoggedIn(true)
+          this.userSessionService.setUser(tokenUser);
+          this.userSessionService.setLoggedIn(true)
 
         }
         return of(value.success);
@@ -50,7 +57,60 @@ export class AuthService {
       )
     )
 
+  }
 
+  changeRole(role: string): Observable<boolean> {
+
+    return this.httpCoreService.postData<AuthToken>(`${this.httpCoreService.baseUrl}authrole`,
+      {
+        email: this.userSessionService.user.email,
+        password: '',
+        role: role
+      }).pipe(
+        switchMap((value: AuthToken) => {
+          if (value.success) {
+
+            this.tokenService.setToken(value.token);
+            const tokenUser = this.appJwtService.userPayload(this.tokenService.getToken());
+
+            console.log("AuthService.changerole: " + JSON.stringify(tokenUser));
+
+            this.userSessionService.setUser(tokenUser);
+            this.userSessionService.setLoggedIn(true)
+          }
+          return of(value.success);
+        }
+        )
+      )
+
+    //return of(true).pipe(delay(2000));
+  }
+
+  changePassword( oldPass: string, newPass: string): Observable<boolean> {
+
+    return this.httpCoreService.postData<AuthToken>(`${this.httpCoreService.baseUrl}changepassword`,
+      {
+        email: this.userSessionService.user.email,
+        password: newPass,
+        role: oldPass
+      }).pipe(
+        switchMap((value: AuthToken) => {
+          if (value.success) {
+
+            this.tokenService.setToken(value.token);
+            const tokenUser = this.appJwtService.userPayload(this.tokenService.getToken());
+
+            console.log("AuthService.changerole: " + JSON.stringify(tokenUser));
+
+            this.userSessionService.setUser(tokenUser);
+            this.userSessionService.setLoggedIn(true)
+          }
+          return of(value.success);
+        }
+        )
+      )
+
+    //return of(true).pipe(delay(2000));
   }
 
   getSumSati(): Observable<boolean> {
@@ -69,9 +129,8 @@ export class AuthService {
   logout(): boolean {
 
     this.tokenService.setToken('');
-    this.appService.setUserLoggedIn(false);
-    this.usersession.loggedIn = false;
-    this.usersession.role = '';
+    this.userSessionService.setLoggedIn(false);
+    this.userSessionService.user.role = '';
 
     if (this.tokenService.getToken() == '') {
       return true;

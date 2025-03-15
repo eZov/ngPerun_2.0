@@ -1,0 +1,23 @@
+// menu-data.ts
+export const menuDataLik: { [key: string]: Object | null }[] = [
+    { id: 'priprema', text: 'Priprema-akontacije', iconCss: 'em-icons-mod e-priprema', parentId: null },
+    // { id: 'akon_putninalog', text: 'Putni nalozi', iconCss: 'em-icons e-file', parentId: 'priprema' },
+    // { id: 'akon_putninalog_proforma', text: 'Putni nalozi - PRO FORMA', iconCss: 'em-icons e-file', parentId: 'priprema' },                   
+    { id: 'gp_akontacija', text: 'Putni nalozi - puna lista', iconCss: 'em-icons e-file', parentId: 'priprema' },
+    { id: 'gp_akontacija_proforma', text: 'Putni nalozi - PRO FORMA', iconCss: 'em-icons e-file', parentId: 'priprema' },                                  
+    // { id: 'akon_putninalog_ext', text: 'Putni nalozi - eksterni', iconCss: 'em-icons e-file', parentId: 'priprema' },  
+    { id: 'otvoreni', text: 'Otvoreni nalozi', iconCss: 'em-icons-mod e-priprema', parentId: null },                           
+    // { id: 'otvoreni2', text: 'Otvoreni nalozi', iconCss: 'em-icons-mod e-priprema', parentId: null },           
+    { id: 'aktivnost', text: 'Ostali podaci', iconCss: 'em-icons-mod e-priprema', parentId: null },
+    { id: 'edit_person', text: 'Unos saradnika', iconCss: 'em-icons e-file', parentId: 'aktivnost' },        
+    { id: 'edit_aktivnost', text: 'Unos aktivnosti', iconCss: 'em-icons e-file', parentId: 'aktivnost' },         
+    // { id: 'saradnici', text: 'Saradnici', iconCss: 'em-icons-mod e-priprema', parentId: null },
+    // { id: 'edit_saradnici', text: 'Unos saradnika', iconCss: 'em-icons e-file', parentId: 'saradnici' },  
+    { id: 'obracun', text: 'Obračun', iconCss: 'em-icons-mod e-obracun', parentId: null },
+    { id: 'obr_kontrola', text: 'Dolazni nalozi za obračun', iconCss: 'em-icons-mod e-obracun', parentId: 'obracun' },        
+    { id: 'obr_obracun', text: 'Tekući obračun naloga', iconCss: 'em-icons-mod e-obracun', parentId: 'obracun' }, 
+    { id: 'pregled', text: 'Pregled', iconCss: 'em-icons-mod e-priprema', parentId: null },        
+    { id: 'prip_pregled', text: 'Pregled naloga za putovanja', iconCss: 'em-icons-mod e-predlosci', parentId: 'pregled' },        
+    { id: 'obr_pregled', text: 'Pregled naloga nakon putovanja', iconCss: 'em-icons-mod e-predlosci', parentId: 'pregled' },
+    { id: 'rpt_pregled', text: 'Pregled naloga', iconCss: 'em-icons e-file', parentId: 'pregled' },                                   
+];

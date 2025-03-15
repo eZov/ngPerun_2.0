@@ -43,7 +43,7 @@ export class AppComponent {
     private router: Router, 
     private modalService: BsModalService, 
     private appService: AppService,
-    private usersession: UserSessionService,
+    private userSessionService: UserSessionService,
     private auth: AuthService,
     private menuService: MenuService,
     private loaderService: LoaderService         
@@ -68,8 +68,8 @@ export class AppComponent {
       this.timedOut = true;
       console.log(this.idleState);
 
-      this.usersession.logout();
-      this.menuService.setUserLoggedIn();        
+      this.auth.logout();
+      this.menuService.setMenuLoggedIn();        
        this.router.navigateByUrl("/");             
 
     });
@@ -90,9 +90,9 @@ export class AppComponent {
 
     keepalive.onPing.subscribe(() => this.lastPing = new Date());
 
-    this.appService.getUserLoggedIn().subscribe(userLoggedIn => {
+    this.userSessionService.getLoggedIn().subscribe(userLoggedIn => {
       if (userLoggedIn) {
-        idle.setIdle(this.usersession.idleTime);
+        idle.setIdle(this.userSessionService.idleTime);
         idle.watch()
         this.timedOut = false;
 
@@ -107,7 +107,7 @@ export class AppComponent {
         if (event instanceof NavigationStart) {
             console.log('Route change detected url:' + event.url);            
             console.log(event);    
-            this.usersession.navigateUrl(event.url);        
+            this.userSessionService.navigateUrl(event.url);        
             this.loaderService.display(true); 
         }
 
@@ -142,16 +142,11 @@ export class AppComponent {
     this.reset();
   }
 
+  // Logut kada je isteklo vrijeme
   logout() {
     this.childModal.hide();
-    this.appService.setUserLoggedIn(false);
 
     this.auth.logout();
-    this.usersession.loggedIn = false;
-
-    this.usersession.role = '';
-    this.router.navigateByUrl("/");
-
   }
 
 

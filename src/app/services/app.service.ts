@@ -13,11 +13,11 @@ export class AppService {
     this.userLoggedIn.next(false);
   }
 
-  setUserLoggedIn(userLoggedIn: boolean) {
-    this.userLoggedIn.next(userLoggedIn);
-  }
+  // setUserLoggedIn(userLoggedIn: boolean) {
+  //   this.userLoggedIn.next(userLoggedIn);
+  // }
 
-  getUserLoggedIn(): Observable<boolean> {
-    return this.userLoggedIn.asObservable();
-  }
+  // getUserLoggedIn(): Observable<boolean> {
+  //   return this.userLoggedIn.asObservable();
+  // }
 }
