@@ -1,0 +1,14 @@
+<div #myModal class="container">
+        <div *ngIf="lastMessage" class="bg-primary content text-white p-2 mb-3" style="max-width: 40rem;"
+                [class.bg-danger]="lastMessage.error">
+                <div class="card-header position-relative">
+                        <span class="align-middle">Perun</span>
+                </div>
+                <div class="card-body">
+                        <h4>{{lastMessage.text}}</h4>
+                        <hr>
+                        <button type="button" class="btn btn-secondary" (click)="close()">Zatvori</button>
+                </div>
+        </div>
+
+</div>

@@ -1,0 +1,68 @@
+<div class="container p-3">
+    <div class="row  bg-light bg-gradient text-white">
+        <div class="col-sm-8">
+        </div>
+        <div class="mt-2 col-sm-2 d-grid gap-2">
+            <button class="btn btn-primary m-1 btn-sm" (click)="dodaj()">Dodaj</button>
+        </div>
+        <div class="mt-2 col-sm-2 d-grid gap-2">
+            <button type="button" class="btn btn-danger m-1 btn-sm"  [disabled]="delDisabled" (click)="obrisi()">Obriši</button>
+        </div>
+    </div>
+    <div class="row">
+        <hr>
+    </div> 
+    <form [formGroup]="clientForm" #form="ngForm" (ngSubmit)="submitForm(form)" (reset)="resetForm()">
+        <div class="row g-3">
+            <div class="form-group col-sm-3">
+                <label>Šifra</label>
+                <input class="form-control" formControlName="Id" />
+                <ul class="text-danger list-unstyled mt-1">
+                    <!-- <li *validationErrors="clientForm; control:'Id'; let err">
+                        {{ err }}
+                    </li> -->
+                </ul>
+            </div>
+        </div>
+        <div class="row g-3">
+            <div class="form-group col-sm-3">
+                <label>Šifra više organizacione jedinice</label>
+                <input class="form-control" formControlName="ParentId" (input)="updateSifra()"/>
+                <ul class="text-danger list-unstyled mt-1">
+                    <!-- <li *validationErrors="clientForm; control:'ParentId'; let err">
+                        {{ err }}
+                    </li> -->
+                </ul>
+            </div>
+        </div>
+        <div class="row g-3">
+            <div class="form-group col-sm-12">
+                <label>Naziv</label>
+                <input class="form-control" formControlName="Naziv" />
+                <ul class="text-danger list-unstyled mt-1">
+                    <!-- <li *validationErrors="clientForm; control:'Naziv'; let err">
+                        {{ err }}
+                    </li> -->
+                </ul>
+            </div>
+        </div>
+        <div class="row" *ngIf="editForm === true">
+            <!-- <div class="mt-2 col-sm-4"> -->
+            <div class="mt-2 col-sm-2 d-grid gap-3">
+                <button type="submit" class="btn btn-primary m-1 btn-sm" [class.btn-warning]="editing"
+                    [disabled]="form.invalid">
+                    {{editing ? "Spasi" : "Kreiraj"}}
+                </button>
+            </div>
+            <div class="mt-2 col-sm-2 d-grid gap-3">
+                <button type="button" (click)="resetForm()" class="btn btn-secondary m-1 btn-sm"
+                    [disabled]="false">Odustani</button>
+            </div>
+            <!-- </div> -->
+        </div>
+    </form>
+    <div class="row">
+        <hr>
+    </div>
+   
+</div>

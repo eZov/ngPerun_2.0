@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { RestDataSource } from "./rest.datasource";
 import { Resolve, ActivatedRouteSnapshot } from '@angular/router';
-import { UserSessionService } from '../services/user-session.service';
+import { UserSessionService } from '../core-services/user-session.service';
 
 
 @Injectable({

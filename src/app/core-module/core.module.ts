@@ -1,4 +1,3 @@
-import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 
 import { NgIdleKeepaliveModule } from '@ng-idle/keepalive'; // this includes the core NgIdleModule but includes keepalive providers for easy wireup
@@ -8,7 +7,6 @@ import { CookieService } from 'ngx-cookie-service';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule, HttpClientJsonpModule } from '@angular/common/http';
 
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatTableModule } from '@angular/material/table';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatExpansionModule } from '@angular/material/expansion';
@@ -28,19 +26,23 @@ import { DatePickerModule, DateRangePickerModule, CalendarModule } from '@syncfu
 import { DropDownListAllModule, MultiSelectModule, ComboBoxModule, AutoCompleteModule, DropDownListModule } from '@syncfusion/ej2-angular-dropdowns';
 import { ButtonModule, SwitchModule, ChipListModule, CheckBoxModule } from '@syncfusion/ej2-angular-buttons';
 import { RichTextEditorAllModule } from '@syncfusion/ej2-angular-richtexteditor';
-import { GridAllModule, GridModule, PageService, SortService, FilterService, GroupService, 
-  SearchService, PagerModule } from '@syncfusion/ej2-angular-grids';
-import { TooltipModule, DialogModule  } from '@syncfusion/ej2-angular-popups';
+import {
+  GridAllModule, GridModule, PageService, SortService, FilterService, GroupService,
+  SearchService, PagerModule
+} from '@syncfusion/ej2-angular-grids';
+import { TooltipModule, DialogModule } from '@syncfusion/ej2-angular-popups';
 import { ToastModule } from '@syncfusion/ej2-angular-notifications';
 
-import { HomeComponent }  from './components/home/home.component';
-import { FooterComponent }  from './components/footer/footer.component';
+import { HomeComponent } from './components/home/home.component';
+import { FooterComponent } from './components/footer/footer.component';
 // import { NavbarComponent } from './components//navbar/navbar.component';
 import { LoginComponent } from './components/login/login.component';
 import { MenubarComponent } from './components/menubar/menubar.component';
 import { Routes, RouterModule } from "@angular/router";
 import { NotFoundComponent } from './components/notFound.component';
 import { NotDevelopedComponent } from './components/notDeveloped.component';
+import { CommonModule } from '@angular/common';
+import { SpinnerComponent } from './components/spinner/spinner.component';
 
 
 
@@ -48,24 +50,25 @@ import { NotDevelopedComponent } from './components/notDeveloped.component';
   declarations: [
     HomeComponent,
     FooterComponent,
+    SpinnerComponent,
     // NavbarComponent,
     LoginComponent,
     MenubarComponent,
-    NotFoundComponent, 
-    NotDevelopedComponent         
+    NotFoundComponent,
+    NotDevelopedComponent
   ],
   exports: [
     HomeComponent,
     FooterComponent,
+    SpinnerComponent,
     // NavbarComponent,
     LoginComponent,
     MenubarComponent,
-    NotFoundComponent, 
-    NotDevelopedComponent              
-  ],  
+    NotFoundComponent,
+    NotDevelopedComponent
+  ],
   imports: [
-    BrowserModule,
-    BrowserAnimationsModule,
+    CommonModule,
     FormsModule,
     ReactiveFormsModule,
     HttpClientModule,
@@ -75,16 +78,15 @@ import { NotDevelopedComponent } from './components/notDeveloped.component';
     SwitchModule, ChipListModule, CheckBoxModule,
     RichTextEditorAllModule,
     GridModule,
-    PagerModule,      
+    PagerModule,
     TooltipModule,
     DialogModule,
-    SidebarModule, CalendarModule,ToastModule,
-    BrowserAnimationsModule,
+    SidebarModule, CalendarModule, ToastModule,
     MatTableModule, MatPaginatorModule, MatSortModule,
     MatDialogModule, MatFormFieldModule, MatInputModule, MatExpansionModule,
     MatProgressSpinnerModule, MatSelectModule, MatToolbarModule,
     GridAllModule,
-    DatePickerModule, MultiSelectModule, ComboBoxModule,DateRangePickerModule,
+    DatePickerModule, MultiSelectModule, ComboBoxModule, DateRangePickerModule,
     ToolbarModule, TreeViewModule, TabAllModule,
     TextBoxModule, UploaderModule,
     AutoCompleteModule, MenuModule,
@@ -97,7 +99,7 @@ import { NotDevelopedComponent } from './components/notDeveloped.component';
     SortService,
     FilterService,
     GroupService,
-    SearchService,  
+    SearchService,
     CookieService
   ]
 })

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { UserSessionService } from '../../services/user-session.service';
-import { LoaderService } from '../../services/loader.service';
-import { LocationService } from '../../services/location.service';
+import { UserSessionService } from '../../../core-services/user-session.service';
+import { LoaderService } from '../../../core-services/loader.service';
+import { LocationService } from '../../../core-services/location.service';
 
 import { CookieService } from 'ngx-cookie-service';
 

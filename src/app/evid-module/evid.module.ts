@@ -1,4 +1,3 @@
-import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 
 import { NgIdleKeepaliveModule } from '@ng-idle/keepalive'; // this includes the core NgIdleModule but includes keepalive providers for easy wireup
@@ -8,7 +7,6 @@ import { CookieService } from 'ngx-cookie-service';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule, HttpClientJsonpModule } from '@angular/common/http';
 
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatTableModule } from '@angular/material/table';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatExpansionModule } from '@angular/material/expansion';
@@ -44,8 +42,6 @@ import { RouterModule } from '@angular/router';
         
   ],  
   imports: [
-    BrowserModule,
-    BrowserAnimationsModule,
     FormsModule,
     ReactiveFormsModule,
     HttpClientModule,
@@ -59,7 +55,6 @@ import { RouterModule } from '@angular/router';
     TooltipModule,
     DialogModule,
     SidebarModule, CalendarModule,ToastModule,
-    BrowserAnimationsModule,
     MatTableModule, MatPaginatorModule, MatSortModule,
     MatDialogModule, MatFormFieldModule, MatInputModule, MatExpansionModule,
     MatProgressSpinnerModule, MatSelectModule, MatToolbarModule,

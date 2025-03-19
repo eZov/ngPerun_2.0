@@ -23,7 +23,13 @@ const routes: Routes = [
   {
     path: 'home-not-developed/:form',
     component: NotDevelopedComponent   
-  },   
+  },  
+  
+  {
+    path: 'admin',
+    loadChildren: () =>
+      import('./admin-module/admin-module').then((m) => m.AdminModule),
+  },
   { path: "**", redirectTo: "/" },
 ];
 

@@ -5,7 +5,7 @@ import { Observable } from "rxjs";
 //import { shareReplay, catchError, map } from 'rxjs/operators';
 
 import { RestDataSource } from "../shared/rest.datasource";
-import { UserSessionService } from '../services/user-session.service';
+import { UserSessionService } from '../core-services/user-session.service';
 import { EvidGodOdm } from '../model/evid-gododm.model';
 
 

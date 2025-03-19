@@ -1,14 +1,14 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { NgForm } from "@angular/forms";
 import { Router, ActivatedRoute } from '@angular/router';
-import { AuthService } from '../../services/auth.service';
+import { AuthService } from '../../../core-services/auth.service';
 import { DropDownListComponent } from '@syncfusion/ej2-angular-dropdowns';
-import { UserSessionService } from '../../services/user-session.service';
-import { LoaderService } from '../../services/loader.service';
+import { UserSessionService } from '../../../core-services/user-session.service';
+import { LoaderService } from '../../../core-services/loader.service';
 
 import { SidebarComponent } from '@syncfusion/ej2-angular-navigations';
 import { CookieService } from 'ngx-cookie-service';
-import { MenuService } from '../../services/menu.service';
+import { MenuService }  from '../../../core-services/menu.service';
 
 import { User } from '../../user.model';
 import { Observable, of } from 'rxjs';

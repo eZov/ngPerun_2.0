@@ -1,0 +1,7 @@
+input.ng-dirty.ng-invalid { border: 2px solid #ff0000 }
+input.ng-dirty.ng-valid { border: 2px solid #6bc502 }
+
+/* To specify height and font size */
+.e-float-input, .e-float-input.e-control-wrapper{
+    font-size: 17px;    
+}

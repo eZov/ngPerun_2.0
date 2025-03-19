@@ -34,15 +34,15 @@ import { AppComponent } from './app.component';
 
 
 import { WINDOW_PROVIDERS } from './window.providers';
-import { LocationService } from './core-module/services/location.service';
+import { LocationService } from './core-services/location.service';
 
 import { AuthGuardService } from './shared/auth-guard.service';
 import { RoleGuardService } from './shared/role-guard.service';
-import { AuthService } from './core-module/services/auth.service';
+import { AuthService } from './core-services/auth.service';
 import { EmployeeService } from './shared/employee.service';
 //import { RestDataSource, REST_URL } from './shared/rest.datasource';
 import { RestDataSource } from './shared/rest.datasource';
-import { LoaderService } from './core-module/services/loader.service';
+import { LoaderService } from './core-services/loader.service';
 
 import { EvidDnevnikService } from './services/evid-dnevnik.service';
 
@@ -52,9 +52,11 @@ import { DatePickerModule, DateRangePickerModule, CalendarModule } from '@syncfu
 import { DropDownListAllModule, MultiSelectModule, ComboBoxModule, AutoCompleteModule, DropDownListModule } from '@syncfusion/ej2-angular-dropdowns';
 import { ButtonModule, SwitchModule, ChipListModule, CheckBoxModule } from '@syncfusion/ej2-angular-buttons';
 import { RichTextEditorAllModule } from '@syncfusion/ej2-angular-richtexteditor';
-import { GridAllModule, GridModule, PageService, SortService, FilterService, GroupService, 
-  SearchService, PagerModule } from '@syncfusion/ej2-angular-grids';
-import { TooltipModule, DialogModule  } from '@syncfusion/ej2-angular-popups';
+import {
+  GridAllModule, GridModule, PageService, SortService, FilterService, GroupService,
+  SearchService, PagerModule
+} from '@syncfusion/ej2-angular-grids';
+import { TooltipModule, DialogModule } from '@syncfusion/ej2-angular-popups';
 import { ToastModule } from '@syncfusion/ej2-angular-notifications';
 
 
@@ -68,17 +70,19 @@ import { EmployeeExtService } from './shared/employeeext.service';
 import { SfrEvidPrisService } from './shared/sfrevidpris.service';
 
 import { CoreModule } from './core-module/core.module';
+import { CommonModule } from '@angular/common';
+import { MessagesModule } from './messages/messages.module';
 
 
 @NgModule({
   declarations: [
-    AppComponent,    
+    AppComponent,
   ],
   imports: [
-    CoreModule,
     BrowserModule,
     BrowserAnimationsModule,
-    AppRoutingModule,
+    AppRoutingModule, CoreModule, MessagesModule,
+    CommonModule, 
     FormsModule,
     ReactiveFormsModule,
     HttpClientModule,
@@ -88,11 +92,10 @@ import { CoreModule } from './core-module/core.module';
     SwitchModule, ChipListModule, CheckBoxModule,
     RichTextEditorAllModule,
     GridModule,
-    PagerModule,      
+    PagerModule,
     TooltipModule,
     DialogModule,
-    SidebarModule, CalendarModule,ToastModule,
-    BrowserAnimationsModule,
+    SidebarModule, CalendarModule, ToastModule,
     MatTableModule, MatPaginatorModule, MatSortModule,
     MatDialogModule, MatFormFieldModule, MatInputModule, MatCardModule, MatExpansionModule,
     MatProgressSpinnerModule, MatSelectModule, MatToolbarModule,
@@ -102,7 +105,7 @@ import { CoreModule } from './core-module/core.module';
     MatButtonModule,
     MatIconModule,
     GridAllModule,
-    DatePickerModule, MultiSelectModule, ComboBoxModule,DateRangePickerModule,
+    DatePickerModule, MultiSelectModule, ComboBoxModule, DateRangePickerModule,
     ToolbarModule, TreeViewModule, TabAllModule,
     TextBoxModule, UploaderModule,
     AutoCompleteModule, MenuModule,
@@ -112,19 +115,19 @@ import { CoreModule } from './core-module/core.module';
   ],
   providers: [
     EnvServiceProvider,
-    RestDataSource,        
-    AuthService, AuthGuardService, EmployeeService, EmployeeExtService, AktivnostService, 
+    RestDataSource,
+    AuthService, AuthGuardService, EmployeeService, EmployeeExtService, AktivnostService,
     EmployeeRecService, OpcinaService, OrganizacijaService, SfrEvidPrisService,
-    RoleGuardService, 
+    RoleGuardService,
     LoaderService,
     EvidDnevnikService,
     PageService,
     SortService,
     FilterService,
     GroupService,
-    SearchService,  
-    CookieService, 
-    WINDOW_PROVIDERS, LocationService ],
+    SearchService,
+    CookieService,
+    WINDOW_PROVIDERS, LocationService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

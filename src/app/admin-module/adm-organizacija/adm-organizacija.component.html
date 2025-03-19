@@ -1,0 +1,23 @@
+<div class="container-fluid peruncontainer">
+  <div class="loading-indicator" *ngIf="showLoader">
+
+  </div>
+  <div class="title bg-light bg-gradient">Organizaciona struktura</div>
+  <ejs-splitter #horizontal height='100%' width='100%'>
+    <e-panes>
+      <e-pane size='30%' [collapsible]='true'>
+        <ng-template #content>
+          <ejs-treeview  #treevalidate id='treeroot' [fields]='field' [showCheckBox]='showCheckBox'
+            [autoCheck]='autoCheck' (created)='onCreated($event)' (nodeClicked)='onNodeClicked($event)'
+            (nodeSelected)='onNodeSelected($event)' (dataBound)='onDataBound($event)'>
+          </ejs-treeview>
+        </ng-template>
+      </e-pane>
+      <e-pane [collapsible]='true'>
+        <ng-template #content>
+          <adm-organizacija-data (callParentMethod)="parentMethod()"></adm-organizacija-data>
+        </ng-template>
+      </e-pane>
+    </e-panes>
+  </ejs-splitter>
+</div>

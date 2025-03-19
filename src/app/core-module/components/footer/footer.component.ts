@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { APIversionService } from '../../services/apiversion.service';
+import { APIversionService }  from '../../../core-services/apiversion.service';
 
 @Component({
   selector: 'nga-footer',
