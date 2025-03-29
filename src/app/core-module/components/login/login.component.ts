@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { NgForm } from "@angular/forms";
 import { Router, ActivatedRoute } from '@angular/router';
 import { AuthService } from '../../../core-services/auth.service';
@@ -8,10 +8,12 @@ import { LoaderService } from '../../../core-services/loader.service';
 
 import { SidebarComponent } from '@syncfusion/ej2-angular-navigations';
 import { CookieService } from 'ngx-cookie-service';
-import { MenuService }  from '../../../core-services/menu.service';
+import { MenuService } from '../../../core-services/menu.service';
 
 import { User } from '../../user.model';
 import { Observable, of } from 'rxjs';
+import { ToastUtility, ToastComponent, ToastModel } from '@syncfusion/ej2-angular-notifications';
+import { ToastService } from '../../../toasts/toast.service';
 
 
 
@@ -25,16 +27,23 @@ import { Observable, of } from 'rxjs';
 })
 export class LoginComponent implements OnInit {
 
+  public toastObj?: ToastComponent;
+
   @ViewChild('ddlelement', { static: false })
   public dropDownList!: DropDownListComponent;
 
   @ViewChild('dockBar', { static: false }) dockBar!: SidebarComponent;
+
+  @ViewChild("toast") toast!: ElementRef;
 
   private _user: User = new User();
 
   public username!: string;
   public password!: string;
   public errorMessage!: string;
+
+  public passwordOld!: string;
+  public passwordNew!: string;
 
   public loggedIn: boolean = false;
   public email: string = '';
@@ -63,7 +72,8 @@ export class LoginComponent implements OnInit {
     private auth: AuthService,
     public userSessionService: UserSessionService,
     private menuService: MenuService,
-    // private pnStatus: PutnalWorkflowService        
+    // private pnStatus: PutnalWorkflowService   
+    private toastService: ToastService
   ) {
 
     this.cardHtml = activeRoute.snapshot.params["mode"];
@@ -92,6 +102,7 @@ export class LoginComponent implements OnInit {
       this.email = user.email;
       this.userRoles = JSON.parse(JSON.stringify(user.UserRoles));
       this.currentRole = user.role;
+      console.log("login getUser: " + JSON.stringify(user));
     })
 
     this.loaderService.display(false);
@@ -110,11 +121,31 @@ export class LoginComponent implements OnInit {
 
             this.menuService.setMenuLoggedIn();
             this.router.navigateByUrl("/");
-          }
+            this.toastService.reportToast({
+              title: 'Uspješna prijava',
+              content: 'Uspješno ste se prijavili na sistem',
+              cssClass: 'e-toast-success',
+              icon: 'e-success toast-icons',
+              timeOut: 1000
+            });
 
+          }
+          this.loaderService.display(false);
           console.log('---> login unsuccessful!!! ');
         },
-        error: error => console.error('Error:', error),
+        error: error => {
+          console.error('Error:', error)
+          this.loaderService.display(false);
+
+          this.toastService.reportToast({
+            title: 'Greška tokom prijave',
+            content: 'Došlo je do greške tokom prijave: provjerite da li imate prava pristupa i da li su validni vaši podaci za prijavu (korisničko ime i lozinka)',
+            cssClass: 'e-toast-danger',
+            icon: 'e-error toast-icons',
+            timeOut: 3000
+          });
+
+        },
         complete: () => {
           console.log('Complete');
         }
@@ -153,40 +184,40 @@ export class LoginComponent implements OnInit {
 
   changePassword() {
 
-    let selRole: string = this.dropDownList.text!;
+    console.log("changePassword: " + this.passwordOld + " " + this.passwordNew);
 
-    this.auth.authrole(selRole)
-      .subscribe(response => {
-        if (response) {
-          //this.router.navigateByUrl("/");
-          //TODO Ne tretira kada rola nije uspješno promijenjena - 
-          //API wLI2 RoleChange - succes treba biti true samo kada je rola uspješno promijenjena
-          // if (this.datasource.auth_token != null) {
-          //   const token = this.datasource.auth_token;
+    this.auth.changePassword(this.passwordOld, this.passwordNew)
+      .subscribe({
+        next: (value: boolean) => {
+          if (value) {
+            console.log("login changePassword 1: " + JSON.stringify(value));
+            this.toastService.reportToast({
+              title: 'Uspješna promjena lozinke',
+              content: 'Uspješno ste promjenili lozinku. Sad ćete biti odjavljeni iz sistema, te se morate ponovo prijaviti sa novom lozinkom.',
+              cssClass: 'e-toast-success',
+              icon: 'e-success toast-icons',
+              timeOut: 3000
+            });
 
-          //   //decode the token to get its payload
-          //   const tokenUser = this.appJwtService.userPayload(token);
-          //   Object.assign(this.usersession, tokenUser);
-
-
-          //   console.log('login token: ' + JSON.stringify(tokenUser));
-
-          //   // this.userRoles = tokenPayload.UserRoles;
-          //   // this.currentRole = tokenPayload.role;
-          //   // this.loginMessage = tokenPayload.email + " kao " + tokenPayload.role;
-
-          //   // this.usersession.role = tokenPayload.role;
-          //   // this.usersession.email = tokenPayload.email;
-          //   this.changeSetPerRole();
-
-          // }
-
-        } else {
+            this.auth.logout();
+            this.menuService.setMenuLoggedIn();        
+             this.router.navigateByUrl("/");  
+          } else {
+            
+            console.log("login changePassword 2: " + JSON.stringify(value));
+            this.toastService.reportToast({
+              title: 'Greška tokom promjene lozinke',
+              content: 'Došlo je do greške tokom promjene lozinke: provjerite da li su validni vaši podaci za promjenu lozinke (stara i nova lozinka)',
+              cssClass: 'e-toast-danger',
+              icon: 'e-error toast-icons',
+              timeOut: 3000
+            });
+          }
+        },
+        error: error => {
+          console.error('Error:', error)
         }
-        //this.loginMessage = "Authentication Failed";
       })
-
-
   }
 
   //HACK: postavlja se parametar za UserSession

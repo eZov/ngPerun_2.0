@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import { Resolve, ActivatedRouteSnapshot } from '@angular/router';
 
-import { Observable, of, switchMap } from "rxjs";
+import { Observable, of, Subject, switchMap } from "rxjs";
 //import { shareReplay, catchError, map } from 'rxjs/operators';
 
 import { RestDataSource } from "../shared/rest.datasource";
@@ -15,6 +15,9 @@ import { OrgJed } from "../model/orgjed.model";
 })
 export class OrgListService {
 
+  private orgList = new Subject<OrgJed[]>();
+  public orgListObs = this.orgList.asObservable();
+
   constructor(
     private httpCoreService: HttpCoreService,
     public restDataSource: RestDataSource,
@@ -26,8 +29,6 @@ export class OrgListService {
 
   resolve(route: ActivatedRouteSnapshot): Observable<any> {
 
-    //return this.restDataSource.listOrgJed("all");
-
     let _sptype: string = "getorganizacijalist";
     let _org: string = "all";
 
@@ -38,6 +39,22 @@ export class OrgListService {
       }
       )
     )
+
+  }
+
+  getOrgList(): void {
+
+    let _sptype: string = "getorganizacijalist";
+    let _org: string = "all";
+
+    this.httpCoreService.getData<OrgJed[]>(`${this.httpCoreService.baseUrl}${_sptype}?list=${_org}`).subscribe({
+      next: (value: OrgJed[]) => {
+        this.orgList.next(value);
+      },
+      error: (err: any) => {
+        console.log(err);
+      }
+    })
 
   }
 

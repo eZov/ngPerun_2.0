@@ -2,6 +2,7 @@
     <div class="loading-indicator" *ngIf="showLoader">
         <mat-spinner></mat-spinner>
     </div>
+    <div id="ej2Toast" #toast></div>
     <div class="row  align-items-center" *ngIf="loggedIn != true">
         <div class="col-sm-4"></div>
         <div class="col-sm-4 h-100  bg-light d-table p-2">
@@ -60,11 +61,18 @@
     <div class="row align-items-center" *ngIf="loggedIn === true">
 
         <div class="col-sm-4"></div>
-        <div class="col-sm-4" *ngIf="this.cardHtml === 'password'">
+        <div class="col-sm-4" *ngIf="this.cardHtml === 'changepassword'">
             <div class="e-card" style="max-width:400px">
                 <div class="e-card-header-title">Promjena lozinke</div>
                 <div class="e-card-content">
-
+                    <div class="form-group">
+                        <label>Trenutna lozinka</label>
+                        <input class="form-control" name="passwordOld" [(ngModel)]="passwordOld" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Nova lozinka</label>
+                        <input class="form-control" type="password" name="passwordNew" [(ngModel)]="passwordNew" required />
+                    </div>
                 </div>
                 <div class="e-card-actions e-card-vertical">
                     <button class="btn btn-primary m-2" (click)="changePassword()">Promijeni lozinku</button>

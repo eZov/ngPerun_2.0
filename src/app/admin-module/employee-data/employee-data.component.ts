@@ -11,30 +11,37 @@ import { MessageService } from '../../messages/message.service';
 import { Message } from '../../messages/message.model';
 import { DialogUtility } from '@syncfusion/ej2-angular-popups';
 import { OrgJedListService } from '../services/orgjed-list.service';
+import { EmployeesService } from '../services/employees.service';
+import { EmployeeService } from '../services/employee.service';
+import { EmployeeRec } from '../../model/employeerec.model';
+import { OrgListService } from '../../services/org-list.service';
 
 
 // import { Model } from "../model/repository.model"
 
 @Component({
-  selector: 'adm-organizacija-data',
-  templateUrl: './client-data.component.html',
-  styleUrls: ['./client-data.component.css'],
+  selector: 'adm-employee-data',
+  templateUrl: './employee-data.component.html',
+  styleUrls: ['./employee-data.component.css'],
 })
-export class ClientDataComponent {
+export class EmployeeDataComponent {
   private subs: Subscription[] = [];
 
   @Output() callParentMethod: EventEmitter<void> = new EventEmitter();
 
   public toastObj?: ToastComponent;
 
-  orgJed: OrgJed = new OrgJed();
+  employee: EmployeeRec = new EmployeeRec();
   editing: boolean = true;
   editForm: boolean = true;
 
   delDisabled: boolean = true;
 
-  clientForm: FormGroup = new FormGroup({
-    Id: new FormControl({ value: '', disabled: false }, {
+  employeeForm: FormGroup = new FormGroup({
+    EmployeeID: new FormControl({ value: '', disabled: true }, {
+      updateOn: 'change',
+    }),
+    EmployeeNumber: new FormControl({ value: '', disabled: false }, {
       validators: [
         Validators.required,
         Validators.minLength(1),
@@ -42,38 +49,48 @@ export class ClientDataComponent {
       ],
       updateOn: 'change',
     }),
-    ParentId: new FormControl({ value: '', disabled: false }, {
-      validators: [
-        Validators.required,
-        Validators.minLength(1),
-        Validators.pattern('^[0-9 ]+$'),
-      ],
-      updateOn: 'change',
-    }),
-    Naziv: new FormControl({ value: '', disabled: false }, {
+    FirstName: new FormControl({ value: '', disabled: false }, {
       validators: [
         Validators.required,
         Validators.minLength(3),
-        Validators.pattern('^[A-ZŠĐŽČĆa-zšđžčć0-9 .,()/-]+$'),
+        Validators.pattern('^[A-ZŠĐŽČĆa-zšđžčć0-9 ]+$'),
       ],
       updateOn: 'change',
     }),
-    RowId: new FormControl({ value: '', disabled: false }, {
+    LastName: new FormControl({ value: '', disabled: false }, {
+      validators: [
+        Validators.required,
+        Validators.minLength(3),
+        Validators.pattern('^[A-ZŠĐŽČĆa-zšđžčć0-9 ]+$'),
+      ],
       updateOn: 'change',
     }),
-
+    DepartmentUP: new FormControl({ value: '', disabled: false }, {
+      validators: [
+        Validators.required,
+        Validators.minLength(1),
+        Validators.pattern('^[0-9 ]+$'),
+      ],
+      updateOn: 'change',
+    }),
+    emp_username: new FormControl({ value: '', disabled: false }, {
+      validators: [
+        Validators.required,
+        Validators.email,
+        Validators.pattern('^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'),
+      ],
+      updateOn: 'change',
+    }),    
   });
 
-  updateSifra(): void {
-    const parentId = this.clientForm.get('ParentId')?.value;
-    this.clientForm.get('Id')?.setValue(parentId);
-  }
+  dropdownOptions: any[] = []; // Array to store dropdown options
+  public fields: object = { text: 'Naziv', value: 'RowId' };
+  public value = {id: 'id11', text: 'Item 11'};
 
   checkboxLabel: string = '';
 
   public ddlData!: Object[];
-  // maps the appropriate column to fields property
-  public fields: Object = { value: 'broj', text: 'opis' };
+
 
 
   // @ViewChild('ejDateTimePicker1', { static: false })
@@ -82,9 +99,8 @@ export class ClientDataComponent {
   public DialogObj: any;
 
   constructor(
-    private fb: FormBuilder,
-    private orgjedService: OrgjedService,
-    private dataService: OrgJedListService,
+    private orgListService: OrgListService,
+    private employeeService: EmployeeService,
     private loaderService: LoaderService,
     public messageService: MessageService
   ) {
@@ -93,17 +109,23 @@ export class ClientDataComponent {
 
   ngOnInit() {
 
-    const sub1 = this.orgjedService.orgJedObs.subscribe(result => {
-      //console.log('orgjed-ngOnInit' + JSON.stringify(result));
-      result.Naziv = result.Naziv.replace(/\s*\([^\)]+\)/g, '').trim();
-      Object.assign(this.orgJed, result);
+    const sub1 = this.employeeService.data.subscribe(result => {
 
-      this.editing = (this.orgJed && this.orgJed.RowId > 0) ? true : false;
-      this.delDisabled = (this.orgJed && this.orgJed.RowId > 0) ? false : true;
-
-      this.clientForm.reset(this.orgJed);
+      console.log('employees-data - ngOnInit - dataService.data.subscribe - result: ', JSON.stringify(result));
+      this.employee = result;
+      this.employeeForm.reset(result);
+      this.editing = true;
     });
     this.subs.push(sub1);
+
+    const sub2 = this.orgListService.orgListObs.subscribe(result => {
+
+      this.dropdownOptions = result;
+      console.log('orgjed-ngOnInit' + JSON.stringify(this.dropdownOptions));
+    });
+    this.subs.push(sub2);
+
+    this.orgListService.getOrgList();
   }
 
 
@@ -113,21 +135,21 @@ export class ClientDataComponent {
     if (form.valid) {
       this.loaderService.setLoading(true);
 
-      Object.assign(this.orgJed, this.clientForm.value);
-      this.orgJed.Naziv = this.orgJed.Naziv.replace(/\s*\([^\)]+\)/g, '').trim();
+      Object.assign(this.employee, this.employeeForm.value);
+      //this.employee.Naziv = this.employee.Naziv.replace(/\s*\([^\)]+\)/g, '').trim();
 
-      this.orgjedService.saveOrgJed(this.orgJed).subscribe({
+      this.employeeService.saveEmployee(this.employee).subscribe({
         next: (data) => {
           console.log('clientdata-save: ' + JSON.stringify(data));
-          this.orgjedService.setOrgjed(this.orgJed);
+          this.employeeService.setEmployee(this.employee);
           this.loaderService.setLoading(false);
 
           this.toastObj = ToastUtility.show('Uspješno su spašeni podaci', 'Success', 5000) as ToastComponent;
           //this.messageService.reportMessage(new Message(`Uspješno su spašeni podaci ${this.orgJed.Sfr} ...`, false, true));
-          this.dataService.getData();
+          //this.orgjedListService.getData();
         },
         error: error => {
-          this.toastObj = ToastUtility.show('Došlo je do greške tokom spašavanje organizacione jedinice', 'Error', 5000) as ToastComponent;        
+          this.toastObj = ToastUtility.show('Došlo je do greške tokom spašavanje organizacione jedinice', 'Error', 5000) as ToastComponent;
           console.error('Error:', error);
         }
       })
@@ -136,7 +158,7 @@ export class ClientDataComponent {
   }
 
   resetForm() {
-    this.clientForm.reset(this.orgJed);
+    this.employeeForm.reset(this.employee);
   }
 
 
@@ -153,22 +175,22 @@ export class ClientDataComponent {
       animationSettings: { effect: 'Zoom' }
     });
 
-    this.clientForm.reset(this.orgJed);
+    this.employeeForm.reset(this.employee);
   }
 
   private okClick(): void {
     this.DialogObj.hide();
 
-    this.orgjedService.delOrgJed(this.orgJed).subscribe({
+    this.employeeService.delEmployee(this.employee).subscribe({
       next: (data) => {
         console.log('clientdata-osbser: ' + JSON.stringify(data));
         this.loaderService.setLoading(false);
         this.toastObj = ToastUtility.show('Uspješno je obrisana organizaciona jedinica', 'Success', 5000) as ToastComponent;
         //this.messageService.reportMessage(new Message(`Uspješno je obrisana organizaciona jedinica ${this.orgJed.Sfr} ...`, false, true));
-        this.dataService.getData();
+        //this.orgjedListService.getData();
       },
       error: error => {
-        this.toastObj = ToastUtility.show('Došlo je do greške tokom brisanja organizacione jedinice', 'Error', 5000) as ToastComponent;        
+        this.toastObj = ToastUtility.show('Došlo je do greške tokom brisanja organizacione jedinice', 'Error', 5000) as ToastComponent;
         console.error('Error:', error);
       }
     })
@@ -179,12 +201,13 @@ export class ClientDataComponent {
   }
 
   dodaj() {
-    this.orgJed = new OrgJed();
+    this.employee = new EmployeeRec();
+    this.employee.EmployeeID = -1;
     this.editing = false;
     this.delDisabled = true;
 
-    console.log('dodaj: ' + JSON.stringify(this.orgJed));
-    this.clientForm.reset(this.orgJed);
+    console.log('dodaj: ' + JSON.stringify(this.employee));
+    this.employeeForm.reset(this.employee);
 
     //this.callParentMethod.emit();
   }

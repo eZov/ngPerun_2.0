@@ -4,7 +4,8 @@ import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
-import { DetailRowService, EditService, FilterService, GridModule, GroupService, PageService, SortService, ToolbarService } from '@syncfusion/ej2-angular-grids';
+import { DetailRowService, EditService, FilterService, GroupService, PageService, SortService, ToolbarService, 
+  GridModule } from '@syncfusion/ej2-angular-grids';
 import { ToolbarModule, TreeViewModule, TabAllModule, MenuModule, SidebarModule } from '@syncfusion/ej2-angular-navigations';
 import { SplitterModule } from '@syncfusion/ej2-angular-layouts';
 import { DatePickerModule, DateTimePickerModule } from '@syncfusion/ej2-angular-calendars';
@@ -20,8 +21,13 @@ import { ActivatedRoute } from '@angular/router';
 import { OrgJed } from '../model/orgjed.model';
 import { LoaderService } from '../core-services/loader.service';
 import { AdminRoutingModule } from './admin-routing.module';
-import { DataService } from './services/data.service';
+import { OrgJedListService } from './services/orgjed-list.service';
 import { AdmEmployeesComponent } from './adm-employees/adm-employees.component';
+import { EmployeeDataComponent } from './employee-data/employee-data.component';
+import { EmployeesDataComponent } from './employees-data/employees-data.component';
+import { EmployeesService } from './services/employees.service';
+import { EmployeeService } from './services/employee.service';
+import { AdmUsersComponent } from './adm-users/adm-users.component';
 
 // import { AdmEmployeesComponent } from './adm-employees/adm-employees.component';
 // import { AdmEpotpisiComponent } from './adm-epotpisi/adm-epotpisi.component';
@@ -33,11 +39,13 @@ import { AdmEmployeesComponent } from './adm-employees/adm-employees.component';
 
 @NgModule({
   declarations: [
-    ClientDataComponent, AdmOrganizacijaComponent, AdmEmployeesComponent
+    ClientDataComponent, AdmOrganizacijaComponent, AdmEmployeesComponent, 
+    EmployeeDataComponent, EmployeesDataComponent, AdmUsersComponent
   ],
   imports: [
     CommonModule,
-    SidebarModule, SplitterModule, GridModule, ToolbarModule, TreeViewModule, 
+    SidebarModule, SplitterModule, 
+    GridModule, ToolbarModule, TreeViewModule, 
     TabAllModule, MenuModule, DropDownListAllModule, DatePickerModule, 
     DateTimePickerModule, UploaderModule, CheckBoxModule, ButtonModule,
     ToastModule, 
@@ -46,7 +54,7 @@ import { AdmEmployeesComponent } from './adm-employees/adm-employees.component';
     AdminRoutingModule
   ],
   exports: [
-    AdmOrganizacijaComponent, AdmEmployeesComponent
+    AdmOrganizacijaComponent, AdmEmployeesComponent, AdmUsersComponent
   ],
   providers: [
     PageService,
@@ -56,7 +64,7 @@ import { AdmEmployeesComponent } from './adm-employees/adm-employees.component';
     EditService,
     ToolbarService,
     DetailRowService,
-    OrgjedService, DataService
+    OrgjedService, OrgJedListService, EmployeesService, EmployeeService
   ]
 })
 export class AdminModule { }

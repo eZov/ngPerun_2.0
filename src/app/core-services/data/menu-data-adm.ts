@@ -1,6 +1,6 @@
 // menu-data.ts
 export const menuDataAdm: { [key: string]: Object | null }[] = [
-    { id: 'adm_employees', text: 'Pristup portalu', iconCss: 'em-icons-mod e-zatvaranje', parentId: null }, 
+    { id: 'admin/emp_users', text: 'Pristup portalu', iconCss: 'em-icons-mod e-zatvaranje', parentId: null }, 
     { id: 'adm_role', text: 'Role pristupa', iconCss: 'em-icons-mod e-zatvaranje', parentId: null },                         
     { id: 'adm_role1', text: 'Role pristupa portalu I', iconCss: 'em-icons-mod e-zatvaranje', parentId: 'adm_role' },             
     //{ id: 'adm_role2', text: 'Role pristupa portalu II', iconCss: 'em-icons-mod e-zatvaranje', parentId: 'adm_role' },                             
@@ -15,7 +15,7 @@ export const menuDataAdm: { [key: string]: Object | null }[] = [
     { id: 'emp_personalinfo', text: 'Personalne informacije', iconCss: 'em-icons e-file', parentId: 'emp' },      
     { id: 'emp_personalinfo2', text: 'Unos evidencija - postavke', iconCss: 'em-icons e-file', parentId: 'emp' },
     { id: 'emp_personalinfo3', text: 'Email slanje - zabrane', iconCss: 'em-icons e-file', parentId: 'emp' },
-    { id: 'org', text: 'Organizacija i uposlenici', iconCss: 'em-icons-mod e-priprema', parentId: null },
-    { id: 'admin/org_organizacija', text: 'Organizacija', iconCss: 'em-icons e-file', parentId: 'org' },  
-    { id: 'admin/emp_employees', text: 'Uposlenici', iconCss: 'em-icons e-file', parentId: 'org' },                                  
+    { id: 'org', text: 'Organizacija i uposlenici', iconCss: 'e-icons e-orguposlenici', parentId: null },
+    { id: 'admin/org_organizacija', text: 'Organizacija', iconCss: 'e-icons e-organizacija', parentId: 'org' },  
+    { id: 'admin/emp_employees', text: 'Uposlenici', iconCss: 'e-icons e-people', parentId: 'org' },                                  
 ];

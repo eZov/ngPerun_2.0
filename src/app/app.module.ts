@@ -72,6 +72,7 @@ import { SfrEvidPrisService } from './shared/sfrevidpris.service';
 import { CoreModule } from './core-module/core.module';
 import { CommonModule } from '@angular/common';
 import { MessagesModule } from './messages/messages.module';
+import { ToastsModule } from './toasts/toasts.module';
 
 
 @NgModule({
@@ -81,7 +82,7 @@ import { MessagesModule } from './messages/messages.module';
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
-    AppRoutingModule, CoreModule, MessagesModule,
+    AppRoutingModule, CoreModule, MessagesModule, ToastsModule,
     CommonModule, 
     FormsModule,
     ReactiveFormsModule,

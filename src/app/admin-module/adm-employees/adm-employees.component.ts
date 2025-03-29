@@ -10,7 +10,8 @@ import { OrgjedService } from '../services/orgjed.service';
 import { MessageService } from '../../messages/message.service';
 import { Message } from '../../messages/message.model';
 import { Subscription } from 'rxjs';
-import { DataService } from '../services/data.service';
+import { OrgJedListService } from '../services/orgjed-list.service';
+import { EmployeesService } from '../services/employees.service';
 
 @Component({
     selector: 'app-adm-employees',
@@ -22,7 +23,6 @@ export class AdmEmployeesComponent {
 
     @ViewChild('treevalidate', { static: false }) treeview!: TreeViewComponent;
 
-    isLoading = true;
     showLoader!: boolean;
 
     public orgjed!: OrgJed[]
@@ -36,7 +36,8 @@ export class AdmEmployeesComponent {
         private route: ActivatedRoute,
         public restDataSource: RestDataSource,
         private orgjedService: OrgjedService,
-        private dataService: DataService
+        private orgjedListService: OrgJedListService,
+        private employeesService: EmployeesService
     ) {
         console.log("adm-organizacija.construct:" + JSON.stringify(route.url));
     }
@@ -50,7 +51,7 @@ export class AdmEmployeesComponent {
         );
         this.field = { ...this.field, dataSource: this.orgjed };
 
-        const sub1 = this.dataService.data.subscribe(result => {
+        const sub1 = this.orgjedListService.data.subscribe(result => {
             this.orgjed = result.map((one: any) => {
                 if (one.ParentId == 0) { one.ParentId = null; }
                 return one;
@@ -64,6 +65,10 @@ export class AdmEmployeesComponent {
         });
         this.subs.push(sub1);
 
+        const sub2 = this.loaderService.status.subscribe((val: boolean) => {
+            this.showLoader = val;
+        });
+        this.subs.push(sub2);
     }
 
     private expandAll() {
@@ -85,12 +90,8 @@ export class AdmEmployeesComponent {
 
     public onNodeSelected(args: any) {
 
-        this.orgjed.forEach(one => {
-            if (one.Id == Number(args.nodeData.id)) {
-                console.log("OrgJed:" + JSON.stringify(one));
-                this.orgjedService.setOrgjed(one);
-            }
-        });
+        this.employeesService.getData(args.nodeData.id);
+        console.log("selected node:" + args.nodeData.id);
     }
 
     public onDataBound(args: any) {

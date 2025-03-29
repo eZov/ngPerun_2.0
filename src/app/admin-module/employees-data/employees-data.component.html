@@ -1,0 +1,21 @@
+<div class="container p-3">
+    <div class="row  bg-light bg-gradient text-white">
+        <div class="col-sm-12">
+            <ejs-grid [dataSource]='data' [allowPaging]="true" [allowSorting]="true" [pageSettings]="pageSettings" (rowSelected)="rowSelected($event)">
+                <e-columns>
+                    <e-column field='EmployeeID' headerText='EmployeeID' textAlign='Right' width=120></e-column>
+                    <e-column field='Name' headerText='Uposlenik' textAlign='Left'></e-column>
+                    <!-- <e-column field='LastName' headerText='LastName' textAlign='Left'  ></e-column>
+                    <e-column field='emp_username' headerText='UserName' textAlign='Left'  ></e-column> -->
+                </e-columns>
+                </ejs-grid>
+        </div>
+    </div>
+    <div class="row">
+        <hr>
+    </div>
+    <div class="row">
+        <hr>
+    </div>
+
+</div>

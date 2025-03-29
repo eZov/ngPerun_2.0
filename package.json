@@ -1,6 +1,6 @@
 {
   "name": "ng-perun",
-  "version": "0.9.25.03.19",
+  "version": "0.9.25.03.29",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",

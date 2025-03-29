@@ -96,6 +96,18 @@
     content: '\e7ff';
 }
 
+.e-people::before {
+    content: '\e7b9';
+}
+
+.e-organizacija::before {
+    content: '\e709';
+}
+
+.e-orguposlenici::before {
+    content: '\e707';
+}
+
 .menubar {
     background-color: #444d5857;
     border-top: 1px solid rgb(221, 219, 219);

@@ -83,7 +83,7 @@
         </div>
     </div>
     <div tabindex="0" class="e-card" id="basic" *ngIf="loggedIn === true">
-        <div class="e-card-header">
+        <!-- <div class="e-card-header">
             <div class="e-card-header-caption">
                 <div class="e-card-title" style="color:red;">
                     <h5>Novo: mobilna aplikacija za Android - <span
@@ -112,7 +112,7 @@
                     </p>
                 </div>
             </div>
-        </div>
+        </div> -->
         <div class="e-card-separator"></div>
         <div class="e-card-header">
             <div class="e-card-header-caption">
@@ -143,8 +143,8 @@
                     biće vam blokiran pristup portalu</span>. Ukoliko se to dogodi, zatražite od administratora da vam
                 ponovo omogući pristup.</p>
             <p>
-                Lozinku možete promijeniti klikom na ovaj link: <a id="sessEmail" [routerLink]="['/changepassword']"
-                    [routerLinkActive]="['active']">
+                Lozinku možete promijeniti klikom na ovaj link: <a id="sessEmail"
+                    [routerLink]="['/login','changepassword']" [routerLinkActive]="['active']">
                     promjena lozinke za korisnika {{email}}</a>.
             </p>
         </div>

@@ -6,7 +6,7 @@ import { HttpCoreService } from './http-core.service';
 import { UserSessionService } from './user-session.service';
 import { AppJwtService } from './app-jwt.service';
 import { AppService } from './app.service';
-import { TokenService } from  './token.service';
+import { TokenService } from './token.service';
 
 const jwtHelper = new JwtHelperService();
 
@@ -86,29 +86,14 @@ export class AuthService {
     //return of(true).pipe(delay(2000));
   }
 
-  changePassword( oldPass: string, newPass: string): Observable<boolean> {
+  changePassword(oldPass: string, newPass: string): Observable<boolean> {
 
-    return this.httpCoreService.postData<AuthToken>(`${this.httpCoreService.baseUrl}changepassword`,
+    return this.httpCoreService.postData<boolean>(`${this.httpCoreService.baseUrl}changepassword`,
       {
         email: this.userSessionService.user.email,
         password: newPass,
         role: oldPass
-      }).pipe(
-        switchMap((value: AuthToken) => {
-          if (value.success) {
-
-            this.tokenService.setToken(value.token);
-            const tokenUser = this.appJwtService.userPayload(this.tokenService.getToken());
-
-            console.log("AuthService.changerole: " + JSON.stringify(tokenUser));
-
-            this.userSessionService.setUser(tokenUser);
-            this.userSessionService.setLoggedIn(true)
-          }
-          return of(value.success);
-        }
-        )
-      )
+      });
 
     //return of(true).pipe(delay(2000));
   }

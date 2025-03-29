@@ -34,7 +34,8 @@ export class AppComponent {
   public modalRef!: BsModalRef;
 
   @ViewChild('childModal', { static: false }) childModal!: ModalDirective;
-
+  @ViewChild("toast") toast!: ElementRef;
+  
   currentRoute: string;
 
   constructor(

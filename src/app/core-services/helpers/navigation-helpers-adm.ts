@@ -9,8 +9,8 @@ export function selectAdm(
     route_obr_pregled: (param: string) => void
 ): void {
     switch (linkId) {
-        case 'adm_employees': {
-            router.navigate(['/adm_employees']);
+        case 'admin/emp_users': {
+            router.navigate(['admin/emp_users']);
             break;
         }
         case 'adm_orgrole': {
@@ -60,11 +60,11 @@ export function selectAdm(
             break;
         }
         case 'admin/org_organizacija': {
-            router.navigate(['admin//org_organizacija']);
+            router.navigate(['admin/org_organizacija']);
             break;
         }
         case 'admin/emp_employees': {
-            router.navigate(['admin//emp_employees']);
+            router.navigate(['admin/emp_employees']);
             break;
         }        
         default: {

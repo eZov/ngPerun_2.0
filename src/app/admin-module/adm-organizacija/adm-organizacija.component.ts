@@ -10,7 +10,7 @@ import { OrgjedService } from '../services/orgjed.service';
 import { MessageService } from '../../messages/message.service';
 import { Message } from '../../messages/message.model';
 import { Subscription } from 'rxjs';
-import { DataService } from '../services/data.service';
+import { OrgJedListService } from '../services/orgjed-list.service';
 
 @Component({
     selector: 'app-adm-organizacija',
@@ -36,7 +36,7 @@ export class AdmOrganizacijaComponent {
         private route: ActivatedRoute,
         public restDataSource: RestDataSource,
         private orgjedService: OrgjedService,
-        private dataService: DataService
+        private dataService: OrgJedListService
     ) {
         console.log("adm-organizacija.construct:" + JSON.stringify(route.url));
     }
