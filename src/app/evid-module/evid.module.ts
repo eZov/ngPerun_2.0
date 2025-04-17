@@ -31,18 +31,21 @@ import { GridAllModule, GridModule, PageService, SortService, FilterService, Gro
 import { TooltipModule, DialogModule  } from '@syncfusion/ej2-angular-popups';
 import { ToastModule } from '@syncfusion/ej2-angular-notifications';
 import { RouterModule } from '@angular/router';
+import { EvidCalendarComponent } from './evid-calendar/evid-calendar.component';
+import { EvidRoutingModule } from './evid-routing.module';
+import { CommonModule } from '@angular/common';
 
 
 
 @NgModule({
   declarations: [
-      
+    EvidCalendarComponent
   ],
   exports: [
-        
+    EvidCalendarComponent   
   ],  
   imports: [
-    FormsModule,
+    FormsModule, CommonModule,
     ReactiveFormsModule,
     HttpClientModule,
     HttpClientJsonpModule,
@@ -65,7 +68,7 @@ import { RouterModule } from '@angular/router';
     AutoCompleteModule, MenuModule,
     NgIdleKeepaliveModule.forRoot(),
     MomentModule,
-    RouterModule
+    RouterModule, EvidRoutingModule
   ],
   providers: [
     PageService,
@@ -76,4 +79,4 @@ import { RouterModule } from '@angular/router';
     CookieService
   ]
 })
-export class CoreModule { }
+export class EvidModule { }

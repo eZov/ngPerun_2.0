@@ -1,14 +1,15 @@
 import { Injectable } from "@angular/core";
 import { Resolve, ActivatedRouteSnapshot } from "@angular/router";
 
-import { Observable, Subject } from "rxjs";
+import { Observable, of, Subject, switchMap } from "rxjs";
 //import { shareReplay, catchError, map } from 'rxjs/operators';
 
-import { RestDataSource } from "../shared/rest.datasource";
-import { UserSessionService } from '../core-services/user-session.service';
-import { EvidDnevnik } from "../model/evid-dnevnik.model";
-import { EvidGodOdm } from "../model/evid-gododm.model";
-import { EvidSifra } from "../model/evid-sifra.model";
+import { RestDataSource } from "../../shared/rest.datasource";
+import { UserSessionService } from '../../core-services/user-session.service';
+import { EvidDnevnik } from "../../model/evid-dnevnik.model";
+import { EvidGodOdm } from "../../model/evid-gododm.model";
+import { EvidSifra } from "../../model/evid-sifra.model";
+import { HttpCoreService } from "../../core-services/http-core.service";
 
 export interface BtnStatus {
   poslana: boolean; //HACK: false = priprema, true = poslana
@@ -53,7 +54,8 @@ export class EvidDnevnikService {
 
   constructor(
     public restDataSource: RestDataSource,
-    public usersession: UserSessionService
+    public usersession: UserSessionService,
+    private httpCoreService: HttpCoreService
   ) { }
 
   resolve(route: ActivatedRouteSnapshot): Observable<any> {
@@ -78,7 +80,17 @@ export class EvidDnevnikService {
       _YYYY = route.params["yyyy"];
     }
 
-    return this.restDataSource.getEvidDnevnik(_empid, _MM, _YYYY);
+    //return this.restDataSource.getEvidDnevnik(_empid, _MM, _YYYY);
+
+    let _sptype: string = "eviddnevnik";
+
+    return this.httpCoreService.getData<EvidDnevnik[]>(`${this.httpCoreService.baseUrl}${_sptype}?vrsta=list&EmployeeID=${_empid}&mm=${_MM}&yyyy=${_YYYY}&prepare=false`).pipe(
+      switchMap((value: EvidDnevnik[]) => {
+
+        return of(value);
+      }
+      )
+    )
   }
 
   get title() {
@@ -324,8 +336,8 @@ export class EvidDnevnikService {
       //HACK: _recsOld je referenca na red u tabeli, zato se ovdje može mijenjati vrijednost
       if (_recsOld != undefined) {
         _recsOld.sifra_placanja = _recChanged.sifra_placanja;
-        if(_recChanged.opis_rada != undefined){
-          _recChanged.opis_rada = _recChanged.opis_rada.replace(_recsOld.opis_rada || '', "" );
+        if (_recChanged.opis_rada != undefined) {
+          _recChanged.opis_rada = _recChanged.opis_rada.replace(_recsOld.opis_rada || '', "");
         }
       }
     }
@@ -541,7 +553,7 @@ export class EvidDnevnikService {
         let _eDneClonedFiltered = _eDneCloned.filter((eClone) => {
           var d1 = new Date(eClone["datum"] || '');
           if (d1.getDate() == _date.getDate() && _id != eClone.id) _retVal = true;
-            return _retVal;
+          return _retVal;
         });
         console.log(
           "checkOverlapByMonth: 3 ..." + JSON.stringify(_eDneClonedFiltered)

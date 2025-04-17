@@ -3,7 +3,7 @@ export const menuDataUpo: { [key: string]: Object | null }[] = [
     { id: 'evidencije', text: 'Evidencije', iconCss: 'em-icons-mod e-priprema', parentId: null },
     //{ id: 'evid_dnevnik', text: 'Dnevnik rada i odsustva', iconCss: 'em-icons e-file', parentId: 'evidencije' },      
     { id: 'evid_dnevnik2', text: 'Dnevnik rada i odsustva', iconCss: 'em-icons e-file', parentId: 'evidencije' },         
-    { id: 'evid_calendar', text: 'Kalendar rada i odsustva', iconCss: 'em-icons e-file', parentId: 'evidencije' },
+    { id: 'evid/evid_calendar', text: 'Kalendar rada i odsustva', iconCss: 'em-icons e-file', parentId: 'evidencije' },
     // { id: 'priprema', text: 'Moji putni nalozi', iconCss: 'em-icons-mod e-priprema', parentId: null },
     // { id: 'prip_putninalog', text: 'Priprema i odobreni', iconCss: 'em-icons e-file', parentId: 'priprema' },
     // { id: 'obr_izvoputu', text: 'Izvještaj o putu', iconCss: 'em-icons-mod e-izvjestaj', parentId: 'priprema' },

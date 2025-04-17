@@ -37,8 +37,8 @@ export function selectUpo(
             router.navigate(['/home-not-developed/Dnevnik rada i odsustva']);
             break;
         }
-        case 'evid_calendar': {
-            router.navigate(['/home-not-developed/Kalendar rada i odsustva']);
+        case 'evid/evid_calendar': {
+            router.navigate(['evid/evid_calendar']);
             break;
         }
         case 'help_dnrada': {

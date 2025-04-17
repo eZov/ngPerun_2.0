@@ -58,9 +58,7 @@ export class UserSessionService {
   public url!: string;
   public urlPrev!: string;
 
-  constructor(
-
-  ) {
+  constructor() {
     this.apiDays = 30;
     this.apiStatus = "priprema,akontacija";
 

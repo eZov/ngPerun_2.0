@@ -44,7 +44,7 @@ import { EmployeeService } from './shared/employee.service';
 import { RestDataSource } from './shared/rest.datasource';
 import { LoaderService } from './core-services/loader.service';
 
-import { EvidDnevnikService } from './services/evid-dnevnik.service';
+import { EvidDnevnikService } from './evid-module/services/evid-dnevnik.service';
 
 import { TextBoxModule, UploaderModule } from '@syncfusion/ej2-angular-inputs';
 import { ToolbarModule, TreeViewModule, TabAllModule, MenuModule, SidebarModule } from '@syncfusion/ej2-angular-navigations';
@@ -82,7 +82,7 @@ import { ToastsModule } from './toasts/toasts.module';
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
-    AppRoutingModule, CoreModule, MessagesModule, ToastsModule,
+    AppRoutingModule, CoreModule, ToastsModule,
     CommonModule, 
     FormsModule,
     ReactiveFormsModule,

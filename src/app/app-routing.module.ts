@@ -28,8 +28,13 @@ const routes: Routes = [
   {
     path: 'admin',
     loadChildren: () =>
-      import('./admin-module/admin-module').then((m) => m.AdminModule),
+      import('./admin-module/admin.module').then((m) => m.AdminModule),
   },
+  {
+    path: 'evid',
+    loadChildren: () =>
+      import('./evid-module/evid.module').then((m) => m.EvidModule),
+  },  
   { path: "**", redirectTo: "/" },
 ];
 

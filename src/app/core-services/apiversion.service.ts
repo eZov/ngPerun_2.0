@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
 import { APIversion } from '../model/api-version.model';
 import { RestDataSource } from '../shared/rest.datasource';
+import packageJson from '../../../package.json';
 
 @Injectable({
   providedIn: 'root'
@@ -19,8 +20,10 @@ private  devText: string = "";
     private dataSource: RestDataSource
   ) {
 
+    const version = packageJson.version;
+
     this.clientInfo = new APIversion();
-    this.clientInfo.version = "0.9.25.03.09";
+    this.clientInfo.version = version;
     this.clientInfo.footer = " | Perun - ver ";
     this.clientInfo.mainText = " | Perun | ver ";
 
