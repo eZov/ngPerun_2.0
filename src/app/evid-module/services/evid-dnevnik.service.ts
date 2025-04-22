@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import { Resolve, ActivatedRouteSnapshot } from "@angular/router";
 
-import { Observable, of, Subject, switchMap } from "rxjs";
+import { catchError, map, Observable, of, Subject, switchMap } from "rxjs";
 //import { shareReplay, catchError, map } from 'rxjs/operators';
 
 import { RestDataSource } from "../../shared/rest.datasource";
@@ -10,6 +10,7 @@ import { EvidDnevnik } from "../../model/evid-dnevnik.model";
 import { EvidGodOdm } from "../../model/evid-gododm.model";
 import { EvidSifra } from "../../model/evid-sifra.model";
 import { HttpCoreService } from "../../core-services/http-core.service";
+import { LoaderService } from "../../core-services/loader.service";
 
 export interface BtnStatus {
   poslana: boolean; //HACK: false = priprema, true = poslana
@@ -27,8 +28,11 @@ export interface BtnPodnesi {
   providedIn: "root",
 })
 export class EvidDnevnikService {
-  private _eDnevnikData: EvidDnevnik[] = new Array<EvidDnevnik>();
-  private _eDnevnikDataClone!: EvidDnevnik[];
+
+  private _eDnevnikData: EvidDnevnik[] = new Array<EvidDnevnik>();    //HACK: podaci sa servera
+  public _eDnevnikDataClone!: EvidDnevnik[];                         //HACK: klon podataka, koristi se za GO
+
+  private _eDnevnikDataSubj = new Subject<EvidDnevnik[]>();
 
   public _evidPrisSifra: EvidSifra[] = new Array<EvidSifra>();
 
@@ -46,15 +50,16 @@ export class EvidDnevnikService {
   public _saveButtonOn!: boolean;
   public _disabledButton!: boolean;
   public _podnio!: boolean;
-  private _el!: EvidDnevnik;
+  private _el!: EvidDnevnik;          // koristi se za sendDisableSet
 
   private _goYCurrIsk: number = 0;
   private _goYPrevIsk: number = 0;
-  private _evidPodnesen: boolean = false;
+  public _evidPodnesen: boolean = false;
 
   constructor(
     public restDataSource: RestDataSource,
     public usersession: UserSessionService,
+    private loaderService: LoaderService,
     private httpCoreService: HttpCoreService
   ) { }
 
@@ -93,18 +98,30 @@ export class EvidDnevnikService {
     )
   }
 
-  get title() {
+  getTitle(_workStation: number): string {
     console.log(
-      "DnevnikService GetTtile: " + JSON.stringify(this.usersession.workstation)
+      "DnevnikService GetTtile: " + JSON.stringify(this.usersession.user)
     );
-    let _title: string =
-      this.usersession.workstation === 0
-        ? "Dnevnik rada i odsustva "
-        : "Evidencije ( Plan / Realizacija ) ";
+    let _title: string = _workStation === 0 ? "Dnevnik rada i odsustva " : "Evidencije ( Plan / Realizacija ) ";
 
-    return this.usersession.user.role === "uposlenik"
-      ? _title
-      : "Kontrola dnevnika rada i odsustva za: ";
+    return this.usersession.user.role === "uposlenik" ? _title : "Kontrola dnevnika rada i odsustva za: ";
+  }
+
+  /* evidDnevnikData (GRID) - START  */
+
+  get evidDnevnikDataObs(): Observable<EvidDnevnikExt[]> {
+    return this._eDnevnikDataSubj as Observable<EvidDnevnikExt[]>;
+  }
+
+  set evidDnevnikDataObs(value: EvidDnevnik[]) {
+    this._eDnevnikData = value;
+    let _dummyDataGrid: string = JSON.stringify(this._eDnevnikData);
+    this.convertToDay(_dummyDataGrid);              //HACK: konvertuje string u DateTime object
+
+    this._elInit();                                                           //HACK: inicijalizuje _el
+    this._eDnevnikDataClone = JSON.parse(JSON.stringify(this._eDnevnikData)); //HACK: klon podataka, koristi se za GO
+
+    this._eDnevnikDataSubj.next(this.processEvidDnevnikExtData(this._eDnevnikData)); //HACK: emit podaci
   }
 
   get evidDnevnikData(): EvidDnevnik[] {
@@ -117,12 +134,70 @@ export class EvidDnevnikService {
     //HACK: konvertuje string u DateTime object
     this.convertToDay(_dummyDataGrid);
 
-    this._el = this._eDnevnikData.find(
-      (el) => el.locked_ext === true || el.locked_ext === false
-    ) || new EvidDnevnik();
+    // this._el = this._eDnevnikData.find(
+    //   (el) => el.locked_ext === true || el.locked_ext === false
+    // ) || new EvidDnevnik();
+    this._elInit();
 
     this._eDnevnikDataClone = JSON.parse(JSON.stringify(this._eDnevnikData));
   }
+
+  updEvidDnevnikData(
+    _evidDnevnik: EvidDnevnik[],
+    _superlock?: boolean): Observable<boolean> {
+
+    let _sptype: string = "eviddnevnikwrite";;
+    let _lock = (_superlock == true)
+      ? "eviddnevnikwrite?pSuperLock=" + _superlock
+      : "eviddnevnikwrite";
+
+    return this.httpCoreService.postData<EvidDnevnik[]>(`${this.httpCoreService.baseUrl}${_sptype}?${_lock}`, _evidDnevnik).pipe(
+      map((value: EvidDnevnik[]) => {
+        this._eDnevnikData = value;
+        let _dummyDataGrid: string = JSON.stringify(this._eDnevnikData);
+        this.convertToDay(_dummyDataGrid);              //HACK: konvertuje string u DateTime object
+
+        this._elInit();                                                           //HACK: inicijalizuje _el
+        this._eDnevnikDataClone = JSON.parse(JSON.stringify(this._eDnevnikData)); //HACK: klon podataka, koristi se za GO
+
+        this._eDnevnikDataSubj.next(this.processEvidDnevnikExtData(this._eDnevnikData)); //HACK: emit podaci
+        return true;
+      }),
+      catchError((err) => {
+        console.error('Error loading calendar data', err);
+        return of(false);
+      })
+    );
+  }
+
+  refreshEvidDnevnikData(_empID: number,
+    _MM: number,
+    _YYYY: number,
+    _ddlY: number) {
+    this.loaderService.display(true);
+
+    let _sptype: string = "eviddnevnik";;
+
+    this.httpCoreService.getData<EvidDnevnik[]>(`${this.httpCoreService.baseUrl}${_sptype}?vrsta=list&EmployeeID=${_empID}&mm=${_MM}&yyyy=${_YYYY}&prepare=false`).subscribe({
+      next: (value: EvidDnevnik[]) => {
+        this.evidDnevnikDataObs = value;
+
+        this.sendDisableSet();
+        this.getGoStatus(_empID, _ddlY);
+
+        this.loaderService.display(false);
+      },
+      error: (err) => {
+        console.error("Error loading GO data", err);
+        this.loaderService.display(false);
+      }
+    });
+
+
+  }
+
+  /* evidDnevnikData (GRID) - END  */
+
 
   setEvidPrisSifra(value: EvidSifra[]) {
     this._evidPrisSifra = value;
@@ -148,7 +223,8 @@ export class EvidDnevnikService {
     });
   }
 
-  convertToDay(_dummyDataGrid: string) {
+  // Procesira datum u string formatu i konvertuje ga u DateTime objekat
+  private convertToDay(_dummyDataGrid: string) {
     this._eDnevnikData = JSON.parse(_dummyDataGrid, (field, value) => {
       let dupValue: string = value;
       if (
@@ -180,6 +256,12 @@ export class EvidDnevnikService {
 
     this._goYCurrIsk = 0;
     this._goYPrevIsk = 0;
+  }
+
+  private _elInit() {
+    this._el = this._eDnevnikData.find(
+      (el) => el.locked_ext === true || el.locked_ext === false
+    ) || new EvidDnevnik();
   }
 
   public sendDisableSet() {
@@ -292,12 +374,12 @@ export class EvidDnevnikService {
       if (this.godOdm != undefined) {
         if (this.godOdm.yprev_isk != undefined) {
           this.godOdm.yprev_isk += this._eDnevnikDataClone.filter((el) =>
-            el.sifra_placanja || ''.startsWith("GO-" + (this.godOdm.ycurr || 0 - 1))
+            (el.sifra_placanja || '').startsWith("GO-" + (this.godOdm.ycurr || 0 - 1))
           ).length;
         }
         if (this.godOdm.ycurr_isk != undefined) {
           this.godOdm.ycurr_isk += this._eDnevnikDataClone.filter((el) =>
-            el.sifra_placanja || ''.startsWith("GO-" + this.godOdm.ycurr)
+            (el.sifra_placanja || '').startsWith("GO-" + this.godOdm.ycurr)
           ).length;
         }
       }
@@ -309,6 +391,24 @@ export class EvidDnevnikService {
   getGodOdm(): Observable<EvidGodOdm> {
     return this.godOdmObs.asObservable();
   }
+
+  getGoStatus(_empID: number, _YYYY: number) {
+    let _sptype: string = "EvidGodOdm";
+
+    this.httpCoreService.getData<EvidGodOdm>(`${this.httpCoreService.baseUrl}${_sptype}?vrsta=ins&EmployeeID=${_empID}&yyyy=${_YYYY}`).subscribe({
+      next: (value: EvidGodOdm) => {
+        this.setGodOdm(value);
+
+        this.loaderService.display(false);
+      },
+      error: (err) => {
+        console.error("Error loading GO data", err);
+        this.loaderService.display(false);
+      }
+    });
+  }
+
+
 
   setBtnPodnesi(value: BtnPodnesi) {
     this.btnPodnesiObs.next(value);
@@ -373,10 +473,6 @@ export class EvidDnevnikService {
       }
     }
 
-    //console.log( `evid-dnevnikService 1: prevrjes-previsk: ${_yprev_rjes}-${_yprev_isk}  currrjes-currisk: ${_ycurr_rjes}-${_ycurr_isk}` );
-    //console.log( "evid-dnevnikService 2: " + JSON.stringify(_eDnevnikDataChanged) );
-    //console.log( "evid-dnevnikService 3: " + JSON.stringify(_eDnevnikDataChanged) );
-
     return _eDnevnikDataChanged;
   }
 
@@ -428,9 +524,10 @@ export class EvidDnevnikService {
     this._goYCurrIsk = 0;
     this._goYPrevIsk = 0;
 
-    this._el = this._eDnevnikData.find(
-      (el) => el.locked_ext === true || el.locked_ext === false
-    ) || new EvidDnevnik();
+    // this._el = this._eDnevnikData.find(
+    //   (el) => el.locked_ext === true || el.locked_ext === false
+    // ) || new EvidDnevnik();
+    this._elInit();
 
     this._eDnevnikDataClone = JSON.parse(JSON.stringify(this._eDnevnikData));
 
@@ -442,7 +539,7 @@ export class EvidDnevnikService {
         res.vrijeme_do = "";
       }
       // Šifarnik sadrži samo GO, a ne GO-2020
-      if (res.sifra_placanja || ''.indexOf("GO") != -1) {
+      if ((res.sifra_placanja || '').indexOf("GO") != -1) {
         res.sifra_placanja = "GO";
       }
 
@@ -459,6 +556,12 @@ export class EvidDnevnikService {
     });
   };
 
+  /* 
+  Provjera preklapanja evidencija pna istom danu
+  _evidDne - svi redovi u tom danu (bez redova kojima se provjerava vrijeme)
+  _changed - redovi koji se provjeravaju (vrijeme_od, vrijeme_do)
+  _retVal - true - preklapanje, false - nema preklapanja
+  */
   public checkOverlapByDay = (
     _evidDne: EvidDnevnik[],
     _changed: { vrijeme_od?: string; vrijeme_do?: string }
@@ -466,8 +569,9 @@ export class EvidDnevnikService {
     let _retVal: boolean = false;
 
     _evidDne.forEach((value) => {
-      console.log(`checkOverlap: 1 ...${JSON.stringify(+(_changed.vrijeme_od || '').replace(":", ""))}-${JSON.stringify(+(_changed.vrijeme_do || '').replace(":", ""))}`);
-      console.log(`checkOverlap: 2 ...${JSON.stringify(+(value.vrijeme_od || '').replace(":", ""))}-${JSON.stringify(+(value.vrijeme_do || '').replace(":", ""))}`);
+      // console.log(`checkOverlap: 0 ...${JSON.stringify(value)}`);
+      // console.log(`checkOverlap: 1 ...${JSON.stringify(+(_changed.vrijeme_od || '').replace(":", ""))}-${JSON.stringify(+(_changed.vrijeme_do || '').replace(":", ""))}`);
+      // console.log(`checkOverlap: 2 ...${JSON.stringify(+(value.vrijeme_od || '').replace(":", ""))}-${JSON.stringify(+(value.vrijeme_do || '').replace(":", ""))}`);
 
       if (
         +(_changed.vrijeme_od || '').replace(":", "") > +(_changed.vrijeme_do || '').replace(":", "")
@@ -477,8 +581,8 @@ export class EvidDnevnikService {
 
       if (
         // (StartA <= EndB)  and  (EndA >= StartB)
-        +(_changed.vrijeme_od || '').replace(":", "") < +(_changed.vrijeme_do || '').replace(":", "") &&
-        +(_changed.vrijeme_do || '').replace(":", "") > +(_changed.vrijeme_od || '').replace(":", "")
+        +(_changed.vrijeme_od || '').replace(":", "") < +(value.vrijeme_do || '').replace(":", "") &&
+        +(_changed.vrijeme_do || '').replace(":", "") > +(value.vrijeme_od || '').replace(":", "")
       ) {
         _retVal = true;
       }
@@ -488,8 +592,8 @@ export class EvidDnevnikService {
   };
 
   public checkOverlapByMonth = (
-    _eDne: EvidDnevnik[],
-    _eDneChanged: EvidDnevnik[],
+    _eDneCurrent: EvidDnevnik[],                 // tabela svih evidencija u datom mjesecu (TEKUĆA tabela)
+    _eDneChanged: EvidDnevnik[],          // tabela koja se kontroliše (CHANGED + ADDED + DELETED)
     _rowsCounted: number[]
   ): boolean => {
     /*
@@ -500,10 +604,10 @@ export class EvidDnevnikService {
 
     let _retVal: boolean = false;
 
-    // tabela svih evidencija u datom mjesecu
-    let _eDneCloned: EvidDnevnik[] = [];
+    // tabela svih evidencija u datom mjesecu sa : RRD, RRK, SP
+    let _eDneCurrentCloned: EvidDnevnik[] = [];
 
-    // tabela koja se kontroliše
+    // tabela koja se kontroliše sa: RRD, RRK, SP
     let _eDneChangedFilt = _eDneChanged.filter(
       (e) =>
         e.sifra_placanja == "RRD" ||
@@ -512,18 +616,18 @@ export class EvidDnevnikService {
     );
 
     // prepisuju se samo redovi koji sadrže RAD - 
-    _eDne.forEach((el) => {
+    _eDneCurrent.forEach((el) => {
       if (
         el.sifra_placanja == "RRD" ||
         el.sifra_placanja == "RRK" ||
         el.sifra_placanja == "SP"
       ) {
-        _eDneCloned.push(Object.assign({}, el));
+        _eDneCurrentCloned.push(Object.assign({}, el));
       }
     });
 
-
-    _eDneCloned.forEach((el) => {
+    // Prepiši sve redove koji su promijenjeni u tekućem mjesecu
+    _eDneCurrentCloned.forEach((el) => {
       if (
         el.sifra_placanja == "RRD" ||
         el.sifra_placanja == "RRK" ||
@@ -541,26 +645,30 @@ export class EvidDnevnikService {
       }
     });
 
-    console.log(`checkOverlapByMonth 1: ${JSON.stringify(_eDneCloned)}`);
+    console.log(`checkOverlapByMonth 1: ${JSON.stringify(_eDneCurrentCloned)}`);
 
-    _eDneChangedFilt.forEach((el) => {
-      let _date = new Date(el.datum || '');
-      let _id = el.id;
+    _eDneChangedFilt.forEach((eChanged) => {
+      let _dateChanged = new Date(eChanged.datum || '');
 
-      if (_rowsCounted[_date.getDate()] > 1) {
-        console.log("checkOverlapByMonth: 2 ..." + JSON.stringify(_date));
+      if (_rowsCounted[_dateChanged.getDate()] > 1) {
+        console.log(`checkOverlapByMonth: 2 ..." + ${JSON.stringify(eChanged.datum)} - ${JSON.stringify(eChanged.vrijeme_od)} - ${JSON.stringify(eChanged.vrijeme_do)}`);
 
-        let _eDneClonedFiltered = _eDneCloned.filter((eClone) => {
-          var d1 = new Date(eClone["datum"] || '');
-          if (d1.getDate() == _date.getDate() && _id != eClone.id) _retVal = true;
-          return _retVal;
+        let _eDneClonedFiltered = _eDneCurrentCloned.filter((eCurrent) => {
+          var dCurrent = new Date(eCurrent["datum"] || '');
+          var dChanged = new Date(eChanged["datum"] || '');
+          //console.log(`checkOverlapByMonth: 2a ..." + ${JSON.stringify(dCurrent)} - ${JSON.stringify(dChanged)}`);
+
+          /* Kontrola: ako su isti dani da id različiti => GREŠKA. Ovo važi samo ako nema multi redova po danu */
+          // HACK: ovdje uvesti kontrolu ako je isti  i da je sifra placanja različita => GREŠKA
+          // if (d1.getDate() == _dateChanged.getDate() && eChanged.id != eCurrent.id) _retVal = true;
+          // return _retVal;
+          return (dCurrent.getDate() == dChanged.getDate()) && (eCurrent.id != eChanged.id);
         });
-        console.log(
-          "checkOverlapByMonth: 3 ..." + JSON.stringify(_eDneClonedFiltered)
-        );
+        console.log("checkOverlapByMonth: 3 ..." + JSON.stringify(_eDneClonedFiltered));
+
         _retVal = this.checkOverlapByDay(_eDneClonedFiltered, {
-          vrijeme_od: el.vrijeme_od,
-          vrijeme_do: el.vrijeme_do,
+          vrijeme_od: eChanged.vrijeme_od,
+          vrijeme_do: eChanged.vrijeme_do,
         });
         console.log("checkOverlapByMonth: 4 ..." + _retVal);
       }

@@ -12,10 +12,13 @@
     <div class="col-sm-6">
       <p class="h5">{{compTitle}}</p>
     </div>
-    <div class="col-sm-4">
-
+    <div class="col-sm-1 text-right">
+      <p class="h5">mjesec:&nbsp;{{this._MM}}</p>
     </div>
-    <div class="col-sm-1 bg-light">
+    <div class="col-sm-1 text-right">
+      <p class="h5">godina:&nbsp;{{this._YYYY}}</p>
+    </div>    
+    <div class="col-sm-3 bg-light">
     </div>
     <div class="col-sm-1 bg-light">
       <div *ngIf="this.userSessionService.user.role != 'uposlenik'">
@@ -26,12 +29,12 @@
   <div class="row w-100 align-items-center bg-light">
     <div class="col-sm-2 bg-light">
       <div id="control_wrapper">
-        <ejs-datepicker [start]='start' [depth]='depth' [format]='format' (change)='changeDtPick($event)'>
+        <ejs-datepicker #datePicker [start]='start' [depth]='depth' [format]='format' (change)='changeDtPick($event)'>
         </ejs-datepicker>
       </div>
     </div>
     <div class="col-sm-2">
-      <div> {{this._MM}}-{{this._YYYY}}</div>
+      <!-- <div> {{this._MM}}-{{this._YYYY}}</div> -->
     </div>
     <div class="col-sm-1 bg-light">
       <button ejs-button cssClass="e-link" (click)="refreshGrid()"><img src="assets/img/refresh.png">

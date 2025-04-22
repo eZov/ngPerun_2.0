@@ -162,7 +162,7 @@ export function selectSek(
             break;
         }
         case 'evid_kontrola': {
-            router.navigate(['/evid_kontrola']);
+            router.navigate(['evid/evid_kontrola']);
             break;
         }
         default: {

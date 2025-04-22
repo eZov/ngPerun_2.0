@@ -34,15 +34,17 @@ import { RouterModule } from '@angular/router';
 import { EvidCalendarComponent } from './evid-calendar/evid-calendar.component';
 import { EvidRoutingModule } from './evid-routing.module';
 import { CommonModule } from '@angular/common';
+import { EvidDnevnik2Component } from './evid-dnevnik2/evid-dnevnik2.component';
+import { EvidKontrolaComponent } from './evid-kontrola/evid-kontrola.component';
 
 
 
 @NgModule({
   declarations: [
-    EvidCalendarComponent
+    EvidCalendarComponent, EvidDnevnik2Component, EvidKontrolaComponent
   ],
   exports: [
-    EvidCalendarComponent   
+    EvidCalendarComponent, EvidDnevnik2Component, EvidKontrolaComponent   
   ],  
   imports: [
     FormsModule, CommonModule,

@@ -1,0 +1,90 @@
+ /* Absolute Center Spinner */
+ .loading-indicator {
+    position: fixed;
+    z-index: 999;
+    height: 2em;
+    width: 2em;
+    overflow: show;
+    margin: auto;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+  }
+  
+  /* Transparent Overlay */
+  .loading-indicator:before {
+    content: '';
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.3);
+  }
+  
+  .e-grid .e-altrow {
+    background-color: #fafafa;
+}
+
+.rTable    { display: table; }
+.rTableRow       { display: table-row; }
+.rTableHeading    { display: table-header-group; }
+.rTableBody    { display: table-row-group; }
+.rTableFoot    { display: table-footer-group; }
+.rTableCell, .rTableHead  { display: table-cell; }
+    
+/* To customize button appearance */
+.e-customon, .e-customoff {
+  border-radius: 5px;
+  height: 30px;
+  width: 95%;
+}
+
+.e-customon, .e-customon:hover, .e-customon:focus, .e-customon:active {
+  background-color: #776a47;
+  color: #fff;
+} 
+
+.e-customoff, .e-customoff:hover, .e-customoff:focus, .e-customoff:active {
+  background-color: #cc3304dc;
+  color: #fff;
+}
+
+.e-grid .e-rowcell { 
+  /* font-size: 10px;  */
+  padding: 3px 2px; 
+} 
+
+/* Set font size and bold for headertext in Grid  */
+.e-grid .e-headercelldiv { 
+  font-size: 13px; 
+  font-weight: bold; 
+ 
+} 
+/* Set header padding in Grid  */
+.e-grid .e-headercell { 
+  padding: 3px 3px;   
+} 
+/* //Setting padding for Grid toolbar  */
+.e-grid .e-toolbar .e-toolbar-items .e-toolbar-item .e-tbar-btn.e-btn { 
+  padding: 0 0.5px; 
+} 
+
+.e-grid .e-toolbar .e-toolbar-items .e-toolbar-item:not(.e-separator) { 
+  padding: 0.5px; 
+} 
+/* //Setting padding for Grid filterbar  */
+.e-grid .e-filterbarcell, .e-grid .e-filterbarcelldisabled { 
+  padding: 0 5px; 
+} 
+
+.e-search:before{
+  content:'\e993';
+}
+.e-custom {
+  border-radius: 0;
+  height: 100%;
+  width:100%;
+}

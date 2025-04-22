@@ -1,0 +1,183 @@
+<div class="container-fluid peruncontainer">
+  <div class="loading-indicator" *ngIf="showLoader">
+    <mat-spinner></mat-spinner>
+  </div>
+
+  <!-- <ejs-toast #toastElement (created)="onCreate($event)" [position]='toastPosition'>
+    <ng-template #title>
+      <div>Matt sent you a friend request</div>
+    </ng-template>
+    <ng-template #content>
+      <div>Hey, wanna dress up as wizards and ride our hoverboards?</div>
+    </ng-template>
+  </ejs-toast> -->
+
+  <div class="row w-100 align-items-center bg-light mt-2 mb-2">
+    <div class="col-sm-6">
+      <p class="h5">{{compTitle}}</p>
+    </div>
+    <div class="col-sm-1 text-right">
+      <p class="h5">mjesec:&nbsp;{{this._MM}}</p>
+    </div>
+    <div class="col-sm-1 text-right">
+      <p class="h5">godina:&nbsp;{{this._YYYY}}</p>
+    </div>    
+    <div class="col-sm-3 bg-light">
+    </div>
+    <div class="col-sm-1 bg-light">
+      <div *ngIf="this.usersession.user.role != 'uposlenik'">
+        <button ejs-button cssClass="btn-block" iconCss="e-btn-sb-icon sf-icon-back-wf" (click)="goBack()"></button>
+      </div>
+    </div>
+  </div>
+  <div class="row  w-100 align-items-center">
+    <div class="col-sm-1 bg-light">
+      <div id="control_wrapper">
+        <ejs-datepicker #datePicker [start]='start' [depth]='depth' [format]='format' (change)='changeDtPick($event)'>
+        </ejs-datepicker>
+      </div>
+    </div>
+    <div class="col-sm-1 bg-light">
+      <!-- <div> {{this._MM}}-{{this._YYYY}}</div> -->
+    </div>
+    <div class="col-sm-1 bg-light">
+      <div>
+        <button ejs-button cssClass="e-link" (click)="refreshGrid()"><img src="assets/img/refresh.png">
+        </button>
+      </div>
+    </div>
+    <div class="col-sm-1 bg-light">
+      <div *ngIf="this.eDneService._evdStop === true && this.eDneService._evdLockedExt === false">
+        <ejs-tooltip #tooltip
+          content='Kontrola evidencija je u toku. Ako niste poslali evidencije, to još uvijek možete učiniti!'>
+          <span class="e-icons sf-icon-timer-wf"></span>
+        </ejs-tooltip>
+      </div>
+      <div *ngIf="this.eDneService._evdLockedExt === true && this.eDneService._evdStop === true">
+        <ejs-tooltip #tooltip content='Evidencije su kontrolisane i preuzete za u šihtaricu!'>
+          <span class="e-icons sf-icon-lock"></span>
+        </ejs-tooltip>
+      </div>
+    </div>
+    <div class="col-sm-1"></div>
+    <div class="col-sm-2">
+
+      <div>
+        <ejs-tooltip #tooltip content='Zaključajte i pošaljite dnevnik rada'>
+          <button ejs-button id='butSend' #butSend cssClass="btn-block e-primary"
+            iconCss="e-btn-sb-icon sf-icon-mail-all-wf" (click)="evidDnevnikClick()">Podnesi</button>
+        </ejs-tooltip>
+      </div>
+
+    </div>
+    <div class="col-sm-1"></div>
+
+    <div class="col-sm-4">
+      <mat-expansion-panel>
+        <mat-expansion-panel-header class="exppanel-div">
+          <mat-panel-title>Interni god.odm.</mat-panel-title>
+          <mat-panel-description>
+            preostalo:{{godOdm.yprev_rjes!-godOdm.yprev_isk!+godOdm.ycurr_rjes!-godOdm.ycurr_isk!}} dana
+          </mat-panel-description>
+        </mat-expansion-panel-header>
+        <div class="divTable blueTable">
+          <div class="divTableHeading">
+            <div class="divTableRow">
+              <div class="divTableHead">Godina</div>
+              <div class="divTableHead">Po rješenju</div>
+              <div class="divTableHead">Iskorišteno</div>
+              <div class="divTableHead">Preostalo</div>
+            </div>
+          </div>
+          <div class="divTableBody">
+            <div class="divTableRow">
+              <div class="divTableCell">{{godOdm.ycurr!-1}}</div>
+              <div class="divTableCell">{{godOdm.yprev_rjes!}}</div>
+              <div class="divTableCell">{{godOdm.yprev_isk!}}</div>
+              <div class="divTableCell">{{godOdm.yprev_rjes!-godOdm.yprev_isk!}}</div>
+            </div>
+            <div class="divTableRow">
+              <div class="divTableCell">{{godOdm.ycurr!}}</div>
+              <div class="divTableCell">{{godOdm.ycurr_rjes!}}</div>
+              <div class="divTableCell">{{godOdm.ycurr_isk!}}</div>
+                <div class="divTableCell">{{godOdm.ycurr_rjes!-godOdm.ycurr_isk!}}</div>
+            </div>
+            <div class="divTableRow">
+              <div class="divTableCell"></div>
+              <div class="divTableCell"></div>
+              <div class="divTableCell">Ukupno:</div>
+              <div class="divTableCell">{{godOdm.yprev_rjes!-godOdm.yprev_isk!+godOdm.ycurr_rjes!-godOdm.ycurr_isk!}}</div>
+            </div>
+          </div>
+        </div>
+      </mat-expansion-panel>
+    </div>
+  </div>
+
+
+  <div class="row w-100 align-items-center">
+    <div class="col-sm-12 p-2"></div>
+  </div>
+  <div class="row w-100 align-items-center">
+    <div class="col-sm-12">
+      <ejs-grid #grid [editSettings]='editSettings' [toolbar]='toolbar' [allowPaging]="false" [allowSorting]="false"
+        [sortSettings]='sortOptions' allowTextWrap='true' [allowFiltering]="false" [allowGrouping]="false"
+        [pageSettings]='pageSettings' [showColumnChooser]='true' [allowResizing]='true' [gridLines]="lines" frozenRows=0 height=550 
+        (toolbarClick)='clickToolbar($event)' 
+        (beforeBatchSave)="beforeBatchSave($event)" (beforeBatchAdd)="beforeBatchAdd($event)"  
+        (cellEdit)="cellEdit($event)" (cellSave)="cellSave($event)"  (queryCellInfo)='queryCellInfoEvent($event)' (load)='load($event)'>
+        <e-columns>
+          <e-column field='id' headerText='ID' textAlign='Right' isPrimaryKey='true' textAlign='Center' width=60
+            [visible]='false'>
+          </e-column>
+          <e-column field='datum' headerText='Datum' [customAttributes]='customAttributes' [format]='formatOptions'
+            [allowEditing]="false" textAlign='Center' width=70></e-column>
+          <e-column headerText="Dan" [allowEditing]="false" width=50 textAlign="Center">
+            <ng-template #template let-data>
+              <div *ngIf="data.week_day==0">PON</div>
+              <div *ngIf="data.week_day==1">UTO</div>
+              <div *ngIf="data.week_day==2">SRI</div>
+              <div *ngIf="data.week_day==3">ČET</div>
+              <div *ngIf="data.week_day==4">PET</div>
+              <div *ngIf="data.week_day==5">SUB</div>
+              <div *ngIf="data.week_day==6">NED</div>
+            </ng-template>
+          </e-column>
+          <e-column field='vrijeme_od' headerText='od' editType='dropdownedit' [edit]='timeParams'
+            [customAttributes]='customAttributes' [allowEditing]="true" textAlign='Center' width=60></e-column>
+          <e-column field='vrijeme_do' headerText='do' editType='dropdownedit' [edit]='timeParams'
+            [customAttributes]='customAttributes' [visible]='true' [allowEditing]="true" textAlign='Center' width=60>
+          </e-column>
+          <e-column field='opis_rada' headerText='opisa rada' headerTextAlign="Center"
+            [customAttributes]='customAttributes' [allowEditing]="true" textAlign='Left' width=310></e-column>
+
+          <e-column field='sifra_placanja' headerText='Prisustvo' [customAttributes]='customAttributes' [visible]='true'
+            [allowEditing]="true" textAlign='Center' foreignKeyValue='title' foreignKeyField='sifra'
+            [dataSource]='this.sfrevidprisData' cssClass="space" width=95></e-column>
+
+
+          <e-column headerText='Multi' width=30 [customAttributes]='customAttributes'>
+            <ng-template #template let-data>
+              <div *ngIf="(data.button == 1);">
+                <button ejs-button cssClass="e-block e-primary" (click)="multiAdd($event, data.id)">+</button>
+              </div>
+              <div *ngIf="(data.button == 2); else elseblock">
+                <button ejs-button cssClass="e-block e-info" (click)="multiDelete($event, data.id)">-</button>
+              </div>
+            </ng-template>
+            <ng-template #elseblock></ng-template>
+          </e-column>
+
+          <e-column headerText="" [allowEditing]="false" width=30 [customAttributes]='customAttributes' textAlign='Center'>
+            <ng-template #template let-data>
+              <!-- <button *ngIf="data.keyday==false && data.locked==false && data.id > 0" class="e-icons e-delete e-flat"
+                (click)="deleteRow(data)">
+              </button> -->
+              <div *ngIf="data.locked==true"><span class="e-icons e-lock"></span></div>
+            </ng-template>
+          </e-column>
+        </e-columns>
+      </ejs-grid>
+    </div>
+  </div>
+</div>

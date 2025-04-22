@@ -4,17 +4,12 @@ import { Location } from '@angular/common';
 
 import { UserSessionService } from '../../core-services/user-session.service';
 import { LoaderService } from '../../core-services/loader.service';
-import { EvidDnevnikService } from '../services/evid-dnevnik.service';
-import { CalendarComponent, CalendarView } from '@syncfusion/ej2-angular-calendars';
-import { EvidDnevnik } from '../../model/evid-dnevnik.model';
-import { EvidSifra } from '../../model/evid-sifra.model';
-import { EvidCalendar } from '../../model/evid-calendar.model';
-// import { detachEmbeddedView } from '@angular/core/src/view';
+import { CalendarComponent, CalendarView, DatePickerComponent } from '@syncfusion/ej2-angular-calendars';
 import {
   GridComponent, EditSettingsModel, QueryCellInfoEventArgs, SelectionSettingsModel,
   RowSelectEventArgs, RowDeselectEventArgs, ReturnType, GridLine
 } from '@syncfusion/ej2-angular-grids';
-import { TimeListService } from '../../services/time-list.service';
+import { TimeListService } from '../services/time-list.service';
 // import { forEach } from '@angular/router/src/utils/collection';
 import { EvidCalendarWeek } from '../../model/evid-calendar-week.model';
 import { ButtonComponent } from '@syncfusion/ej2-angular-buttons';
@@ -53,10 +48,16 @@ export class EvidCalendarComponent implements OnInit {
   public godOdm?: EvidGodOdm;
 
 
-  public start: CalendarView = "Year";
-  public depth: CalendarView = 'Year';
-  public format: string = 'MMMM y';
+  // DatePicker
+  @ViewChild("datePicker", { static: false })
+  public dp!: DatePickerComponent;
 
+  public start: CalendarView = "Year";
+  public depth: CalendarView = "Year";
+  public format: string = "MM.yyyy";
+  // ////////////////////////////////////////////////////////////
+
+    // Grid
   @ViewChild('gridsum')
   public grid!: GridComponent;
   public selectionOptions!: SelectionSettingsModel;
@@ -64,6 +65,7 @@ export class EvidCalendarComponent implements OnInit {
 
   @ViewChild('gridcal', { static: false }) gridcal!: GridComponent;
   public customAttributes!: Object;
+  // ////////////////////////////////////////////////////////////
 
   @ViewChild('butSend', { static: false })
   public butSend!: ButtonComponent;
@@ -92,16 +94,16 @@ export class EvidCalendarComponent implements OnInit {
 
   ngOnInit() {
 
-
-    const sub1 = this.loaderService.status.subscribe((val: boolean) => {
-      this.showLoader = val;
-    });
-    this.subs.push(sub1);
-
     this._empid = this.route.snapshot.params["empid"];
     if (this._empid == null) {
       this._empid = this.userSessionService.user.empId;
     }
+
+    // SUBSCRIPTIONS /////////////////////////////////////////////////////////
+    const sub1 = this.loaderService.status.subscribe((val: boolean) => {
+      this.showLoader = val;
+    });
+    this.subs.push(sub1);
 
     const sub2 = this.eCalendarService.getGodOdm().subscribe(godOdmObs => {
       this.godOdm = godOdmObs;
@@ -118,6 +120,8 @@ export class EvidCalendarComponent implements OnInit {
       console.log("==(calendar)> login getUser: " + JSON.stringify(user));
     })
     this.subs.push(sub4);
+
+    // /////////////////////////////////////////////////////////
 
     this.compTitle = this.role === 'uposlenik' ? "Kalendar rada i odsustva " : "Kontrola kalendara rada i odsustva za: ";
 
@@ -152,6 +156,7 @@ export class EvidCalendarComponent implements OnInit {
   }
 
   ngAfterViewInit() {
+    this.dp.value = new Date(this._YYYY, this._MM-1, 1); //HACK: index za mjesec počinje od 0
 
     this.sendDisable();
     // Set grid datasource sa Šifre
