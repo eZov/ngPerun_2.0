@@ -20,7 +20,7 @@ private  devText: string = "";
     private dataSource: RestDataSource
   ) {
 
-    const version = "0.9.25.04.22";
+    const version = "0.9.25.10.18";  // should match package.json version
 
     this.clientInfo = new APIversion();
     this.clientInfo.version = version;

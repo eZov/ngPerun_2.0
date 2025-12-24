@@ -9,18 +9,16 @@ import {
   GridComponent, EditSettingsModel, QueryCellInfoEventArgs, SelectionSettingsModel,
   RowSelectEventArgs, RowDeselectEventArgs, ReturnType, GridLine
 } from '@syncfusion/ej2-angular-grids';
-import { TimeListService } from '../services/time-list.service';
-// import { forEach } from '@angular/router/src/utils/collection';
-import { EvidCalendarWeek } from '../../model/evid-calendar-week.model';
+
 import { ButtonComponent } from '@syncfusion/ej2-angular-buttons';
-import { DropDownListComponent } from '@syncfusion/ej2-angular-dropdowns';
 import { ChangedEventArgs } from '@syncfusion/ej2-angular-inputs';
-import { DateTimeJsService } from '../../services/date-time-js.service';
 import { EvidGodOdm } from '../../model/evid-gododm.model';
 import { EmployeeRec } from '../../model/employeerec.model';
 import { EvidCalendarService } from '../services/evid-calendar.service';
 import { Subscription } from 'rxjs';
-
+import { EvidProcesService } from '../services/evid-proces.service';
+import { EvidText } from '../evid-text';
+import { AppRole } from '../../app-roles';
 
 
 @Component({
@@ -47,6 +45,7 @@ export class EvidCalendarComponent implements OnInit {
 
   public godOdm?: EvidGodOdm;
 
+  public evidText = EvidText;
 
   // DatePicker
   @ViewChild("datePicker", { static: false })
@@ -57,7 +56,7 @@ export class EvidCalendarComponent implements OnInit {
   public format: string = "MM.yyyy";
   // ////////////////////////////////////////////////////////////
 
-    // Grid
+  // Grid
   @ViewChild('gridsum')
   public grid!: GridComponent;
   public selectionOptions!: SelectionSettingsModel;
@@ -67,8 +66,19 @@ export class EvidCalendarComponent implements OnInit {
   public customAttributes!: Object;
   // ////////////////////////////////////////////////////////////
 
+  // Button SEND
   @ViewChild('butSend', { static: false })
   public butSend!: ButtonComponent;
+
+  @ViewChild('butSave', { static: false })
+  public butSave!: ButtonComponent;
+
+  @ViewChild('butPopuna', { static: false })
+  public butPopuna!: ButtonComponent;
+
+  @ViewChild('butBrisanje', { static: false })
+  public butBrisanje!: ButtonComponent;
+  // ////////////////////////////////////////////////////////////
 
   public SumSati = 0;
   public chkSuperLock: boolean = false;
@@ -80,6 +90,7 @@ export class EvidCalendarComponent implements OnInit {
     private loaderService: LoaderService,
     private route: ActivatedRoute,
     public eCalendarService: EvidCalendarService,
+    public evidProcesService: EvidProcesService,
     private location: Location,
   ) {
 
@@ -121,6 +132,28 @@ export class EvidCalendarComponent implements OnInit {
     })
     this.subs.push(sub4);
 
+    const sub5 = this.evidProcesService.sndBtnDis$.subscribe({
+      next: (value) => {
+        if (this.butSend != undefined) {
+          console.log(`evid-calendar.component : ${JSON.stringify(value)}`);
+
+          this.butSend.disabled = value.disabled;
+          this.butSend.content = value.title;
+          this.butSend.cssClass = value.title == 'Podnesi' ? 'btn-block e-primary' : 'btn-block e-danger';
+          this.butSend.iconCss = value.title == 'Podnesi' ? 'e-btn-sb-icon sf-icon-mail-all-wf' : 'e-btn-sb-icon sf-icon-mail-delete-wf';
+
+          this.butSave.disabled = value.disabled || value.title == 'Opozovi' ? true : false;
+          this.butPopuna.disabled = value.disabled || value.title == 'Opozovi' ? true : false;
+          this.butBrisanje.disabled = value.disabled || value.title == 'Opozovi' ? true : false;
+        }
+        //this.butSend.disabled = value;
+      },
+      error: (err) => {
+        console.log(err);
+      }
+    });
+    this.subs.push(sub5);
+    
     // /////////////////////////////////////////////////////////
 
     this.compTitle = this.role === 'uposlenik' ? "Kalendar rada i odsustva " : "Kontrola kalendara rada i odsustva za: ";
@@ -134,7 +167,7 @@ export class EvidCalendarComponent implements OnInit {
     this.eCalendarService.evidDnevnikData = this.route.snapshot.data['evidcalendar'];
     this.customAttributes = { class: 'customcss' };
 
-    this.eCalendarService.sendDisableSet();
+    this.evidProcesService.sendDisableSet();
 
     let _dt = this.userSessionService.firstDate;
 
@@ -144,9 +177,9 @@ export class EvidCalendarComponent implements OnInit {
 
     this.eCalendarService.setGodOdm(this.route.snapshot.data['evidgododm']);
 
-    let _emp: EmployeeRec = this.route.snapshot.data['employee'];
+    let _emp: EmployeeRec = this.route.snapshot.data['evidemp'];
     if (_emp != undefined) {
-      this.compTitle = this.compTitle + " " + _emp.FirstName + " " + _emp.LastName
+      this.compTitle = `${this.compTitle}  ${_emp.FirstName} ${_emp.LastName} (${_emp.EmployeeID?.toString()})`;
     }
 
     this.chkSuperLock = this.eCalendarService.chkSuperLock;
@@ -156,9 +189,9 @@ export class EvidCalendarComponent implements OnInit {
   }
 
   ngAfterViewInit() {
-    this.dp.value = new Date(this._YYYY, this._MM-1, 1); //HACK: index za mjesec počinje od 0
+    this.dp.value = new Date(this._YYYY, this._MM - 1, 1); //HACK: index za mjesec počinje od 0
 
-    this.sendDisable();
+    this.evidProcesService.sendDisableSet();
     // Set grid datasource sa Šifre
     console.log("==(calendar)> grid.dataSource: " + JSON.stringify(this.eCalendarService.sfrevidprisData));
     this.grid.dataSource = this.eCalendarService.sfrevidprisData;
@@ -168,41 +201,30 @@ export class EvidCalendarComponent implements OnInit {
 
   // METHODS /////////////////////////////////////////////////////////////////////////
 
-
-  butClick(_day: number) {
-
-    this.eCalendarService.evidDay(_day);
-
-    this.gridsumRefresh();
-    this.eCalendarService.saveButtOn = this.eCalendarService.sendButtOn === true ? true : false;
-  }
-
-
   autoPopulate() {
 
     this.eCalendarService.autoPopulate();
     this.gridsumRefresh();
-    this.eCalendarService.saveButtOn = this.eCalendarService.sendButtOn === true ? true : false;
+    this.evidProcesService._saveButtonOn = this.evidProcesService._sendButtonOn;
   }
 
   autoDelete() {
 
     this.eCalendarService.autoDelete();
     this.gridsumRefresh();
-    this.eCalendarService.saveButtOn = this.eCalendarService.sendButtOn === true ? true : false;
+    this.evidProcesService._saveButtonOn = this.evidProcesService._sendButtonOn;
   }
 
   saveEvid() {
 
     this.loaderService.display(true);
-    let _superlock: boolean = this.role === "sekretarica" ? true : false;
+    let _superlock: boolean = this.role === AppRole.Sekretarica ? true : false;
 
     const sub5 = this.eCalendarService.saveCalendarData(_superlock).subscribe({
       next: (result) => {
         if (result) {
           this.gridsumRefresh();
-          this.eCalendarService.sendDisableSet();
-          this.sendDisable();
+          this.evidProcesService.sendDisableSet();
 
           this.getGoStatus();
         }
@@ -237,12 +259,12 @@ export class EvidCalendarComponent implements OnInit {
 
     const sub6 = this.eCalendarService.evidDnevnikSend(this._empid, this._MM, this._YYYY, sendFlag).subscribe({
       next: (result: boolean) => {
-        if(result) {
+        if (result) {
           this.gridsumRefresh();
 
-          this.eCalendarService.sendDisableSet();
-          this.sendDisable();
-  
+          this.evidProcesService.sendDisableSet();
+          //this.sendDisable();
+
           this.getGoStatus();
         }
         this.loaderService.display(false);
@@ -255,31 +277,6 @@ export class EvidCalendarComponent implements OnInit {
     this.subs.push(sub6);
   }
 
-
-  private sendDisable() {
-
-    //HACK: eCalendarService.sendButtOn odredjuje da li je button Podnesi (sendButtOn=TRUE) ili Opozovi (sendButtOn=FALSE)
-    switch (this.eCalendarService.sendButtOn) {
-      case true: {
-        this.butSend.cssClass = 'btn-block e-primary';
-        this.butSend.iconCss = 'e-btn-sb-icon sf-icon-mail-all-wf';
-        this.butSend.content = 'Podnesi';
-        break;
-      }
-
-      case false: {
-        this.butSend.cssClass = 'btn-block e-danger';
-        this.butSend.iconCss = 'e-btn-sb-icon sf-icon-mail-delete-wf';
-        this.butSend.content = 'Opozovi';
-        break;
-      }
-    }
-
-    this.eCalendarService.sendDisable();
-    this.butSend.disabled = this.eCalendarService.disabledButton;
-    this.eCalendarService.saveButtOn = false;
-
-  }
 
   public getGoStatus() {
 
@@ -305,8 +302,8 @@ export class EvidCalendarComponent implements OnInit {
           if (result) {
 
             this.gridsumRefresh();
-            this.eCalendarService.sendDisableSet();
-            this.sendDisable();
+            this.evidProcesService.sendDisableSet();
+            //this.sendDisable();
 
             this.getGoStatus();
           }
@@ -329,6 +326,14 @@ export class EvidCalendarComponent implements OnInit {
   }
 
   // EVENTS /////////////////////////////////////////////////////////////////////////
+
+  butClick(_day: number) {
+
+    this.eCalendarService.evidDay(_day);
+
+    this.gridsumRefresh();
+    this.evidProcesService._saveButtonOn = this.evidProcesService._sendButtonOn;
+  }
 
 
   customiseCell(args: QueryCellInfoEventArgs) {
@@ -364,7 +369,8 @@ export class EvidCalendarComponent implements OnInit {
   onCheckChange(args: any) {
     this.eCalendarService.selEvidSifra(args);
 
-    console.log("onCheckChange 4: " + this.eCalendarService.sendButtOn);
+    console.log("onCheckChange: " + JSON.stringify(args));
+    this.grid.refresh();
   }
 
   changeDtPick(args: ChangedEventArgs) {
@@ -374,7 +380,7 @@ export class EvidCalendarComponent implements OnInit {
       this._YYYY = _dt.getFullYear();
       this._MM = _dt.getMonth() + 1;
 
-      this.refreshGrid();
+      this.grid.refresh(); //HACK: stari checkbox ostaje označen iako je označen novi
     }
   }
 

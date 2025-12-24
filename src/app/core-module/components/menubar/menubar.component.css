@@ -108,6 +108,22 @@
     content: '\e707';
 }
 
+.e-pristuprole::before {
+    content: '\e930';
+}
+
+.e-pristuprole-1::before {
+    content: '\e278';
+}
+
+.e-pristuprole-2::before {
+    content: '\e290';
+}
+
+.e-pristuprole-3::before {
+    content: '\e295';
+}
+
 .menubar {
     background-color: #444d5857;
     border-top: 1px solid rgb(221, 219, 219);

@@ -4,12 +4,14 @@ import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
-import { DetailRowService, EditService, FilterService, GroupService, PageService, SortService, ToolbarService, 
-  GridModule } from '@syncfusion/ej2-angular-grids';
+import {
+  DetailRowService, EditService, FilterService, GroupService, PageService, SortService, ToolbarService,
+  GridModule
+} from '@syncfusion/ej2-angular-grids';
 import { ToolbarModule, TreeViewModule, TabAllModule, MenuModule, SidebarModule } from '@syncfusion/ej2-angular-navigations';
 import { SplitterModule } from '@syncfusion/ej2-angular-layouts';
 import { DatePickerModule, DateTimePickerModule } from '@syncfusion/ej2-angular-calendars';
-import { DropDownListAllModule } from '@syncfusion/ej2-angular-dropdowns';
+import { DropDownListAllModule, MultiSelectModule } from '@syncfusion/ej2-angular-dropdowns';
 import { UploaderModule } from '@syncfusion/ej2-angular-inputs';
 import { CheckBoxModule, ButtonModule } from '@syncfusion/ej2-angular-buttons';
 import { ToastModule, ToastUtility } from '@syncfusion/ej2-angular-notifications';
@@ -28,6 +30,10 @@ import { EmployeesDataComponent } from './employees-data/employees-data.componen
 import { EmployeesService } from './services/employees.service';
 import { EmployeeService } from './services/employee.service';
 import { AdmUsersComponent } from './adm-users/adm-users.component';
+import { AdmUsersRolesComponent } from './adm-users-roles/adm-users-roles.component';
+import { AdmUsersOrgRolesComponent } from './adm-users-orgroles/adm-users-orgroles.component';
+import { UsersRolesService } from './services/users-roles.service';
+import { EmployeesRolesService } from './services/employees-roles.service';
 
 // import { AdmEmployeesComponent } from './adm-employees/adm-employees.component';
 // import { AdmEpotpisiComponent } from './adm-epotpisi/adm-epotpisi.component';
@@ -39,22 +45,24 @@ import { AdmUsersComponent } from './adm-users/adm-users.component';
 
 @NgModule({
   declarations: [
-    ClientDataComponent, AdmOrganizacijaComponent, AdmEmployeesComponent, 
-    EmployeeDataComponent, EmployeesDataComponent, AdmUsersComponent
+    ClientDataComponent, AdmOrganizacijaComponent, AdmEmployeesComponent,
+    EmployeeDataComponent, EmployeesDataComponent, AdmUsersComponent,
+    AdmUsersRolesComponent, AdmUsersOrgRolesComponent
   ],
   imports: [
     CommonModule,
-    SidebarModule, SplitterModule, 
-    GridModule, ToolbarModule, TreeViewModule, 
-    TabAllModule, MenuModule, DropDownListAllModule, DatePickerModule, 
+    SidebarModule, SplitterModule,
+    GridModule, ToolbarModule, TreeViewModule,
+    TabAllModule, MenuModule, DropDownListAllModule, MultiSelectModule, DatePickerModule,
     DateTimePickerModule, UploaderModule, CheckBoxModule, ButtonModule,
-    ToastModule, 
-    CommonModule, ReactiveFormsModule, FormsModule, 
+    ToastModule,
+    CommonModule, ReactiveFormsModule, FormsModule,
     MatProgressSpinnerModule,
     AdminRoutingModule
   ],
   exports: [
-    AdmOrganizacijaComponent, AdmEmployeesComponent, AdmUsersComponent
+    AdmOrganizacijaComponent, AdmEmployeesComponent, AdmUsersComponent,
+    AdmUsersRolesComponent, AdmUsersOrgRolesComponent
   ],
   providers: [
     PageService,
@@ -64,7 +72,7 @@ import { AdmUsersComponent } from './adm-users/adm-users.component';
     EditService,
     ToolbarService,
     DetailRowService,
-    OrgjedService, OrgJedListService, EmployeesService, EmployeeService
+    OrgjedService, OrgJedListService, EmployeesService, EmployeeService, UsersRolesService, EmployeesRolesService
   ]
 })
 export class AdminModule { }

@@ -20,7 +20,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 
 
 
-import { TextBoxModule, UploaderModule } from '@syncfusion/ej2-angular-inputs';
+import { TextBoxModule, UploaderModule, TextAreaModule } from '@syncfusion/ej2-angular-inputs';
 import { ToolbarModule, TreeViewModule, TabAllModule, MenuModule, SidebarModule } from '@syncfusion/ej2-angular-navigations';
 import { DatePickerModule, DateRangePickerModule, CalendarModule } from '@syncfusion/ej2-angular-calendars';
 import { DropDownListAllModule, MultiSelectModule, ComboBoxModule, AutoCompleteModule, DropDownListModule } from '@syncfusion/ej2-angular-dropdowns';
@@ -36,15 +36,16 @@ import { EvidRoutingModule } from './evid-routing.module';
 import { CommonModule } from '@angular/common';
 import { EvidDnevnik2Component } from './evid-dnevnik2/evid-dnevnik2.component';
 import { EvidKontrolaComponent } from './evid-kontrola/evid-kontrola.component';
+import { EvidNotificationComponent } from './evid-notification/evid-notification.component';
 
 
 
 @NgModule({
   declarations: [
-    EvidCalendarComponent, EvidDnevnik2Component, EvidKontrolaComponent
+    EvidCalendarComponent, EvidDnevnik2Component, EvidKontrolaComponent, EvidNotificationComponent
   ],
   exports: [
-    EvidCalendarComponent, EvidDnevnik2Component, EvidKontrolaComponent   
+    EvidCalendarComponent, EvidDnevnik2Component, EvidKontrolaComponent, EvidNotificationComponent   
   ],  
   imports: [
     FormsModule, CommonModule,
@@ -66,7 +67,7 @@ import { EvidKontrolaComponent } from './evid-kontrola/evid-kontrola.component';
     GridAllModule,
     DatePickerModule, MultiSelectModule, ComboBoxModule,DateRangePickerModule,
     ToolbarModule, TreeViewModule, TabAllModule,
-    TextBoxModule, UploaderModule,
+    TextBoxModule, UploaderModule, TextAreaModule,
     AutoCompleteModule, MenuModule,
     NgIdleKeepaliveModule.forRoot(),
     MomentModule,

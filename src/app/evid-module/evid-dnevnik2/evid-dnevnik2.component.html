@@ -12,9 +12,9 @@
     </ng-template>
   </ejs-toast> -->
 
-  <div class="row w-100 align-items-center bg-light mt-2 mb-2">
+  <div class="row w-100 align-items-center bg-light mt-1 mb-1 p-3   border border-1 border-primary">
     <div class="col-sm-6">
-      <p class="h5">{{compTitle}}</p>
+      <p class="h5 text-uppercase">{{compTitle}}</p>
     </div>
     <div class="col-sm-1 text-right">
       <p class="h5">mjesec:&nbsp;{{this._MM}}</p>
@@ -30,7 +30,7 @@
       </div>
     </div>
   </div>
-  <div class="row  w-100 align-items-center">
+  <div class="row  w-100 align-items-center border border-1 border-danger">
     <div class="col-sm-1 bg-light">
       <div id="control_wrapper">
         <ejs-datepicker #datePicker [start]='start' [depth]='depth' [format]='format' (change)='changeDtPick($event)'>
@@ -47,14 +47,14 @@
       </div>
     </div>
     <div class="col-sm-1 bg-light">
-      <div *ngIf="this.eDneService._evdStop === true && this.eDneService._evdLockedExt === false">
+      <div *ngIf="this.evidProcesService._evdKontrolaUToku === true">
         <ejs-tooltip #tooltip
-          content='Kontrola evidencija je u toku. Ako niste poslali evidencije, to još uvijek možete učiniti!'>
+        [content]="evidText.Kontrola">
           <span class="e-icons sf-icon-timer-wf"></span>
         </ejs-tooltip>
       </div>
-      <div *ngIf="this.eDneService._evdLockedExt === true && this.eDneService._evdStop === true">
-        <ejs-tooltip #tooltip content='Evidencije su kontrolisane i preuzete za u šihtaricu!'>
+      <div *ngIf="this.evidProcesService._evdKontrolisao === true &&  this.evidProcesService._evdLockedExt === true">
+        <ejs-tooltip #tooltip [content]="evidText.Preuzete">
           <span class="e-icons sf-icon-lock"></span>
         </ejs-tooltip>
       </div>
@@ -123,9 +123,9 @@
       <ejs-grid #grid [editSettings]='editSettings' [toolbar]='toolbar' [allowPaging]="false" [allowSorting]="false"
         [sortSettings]='sortOptions' allowTextWrap='true' [allowFiltering]="false" [allowGrouping]="false"
         [pageSettings]='pageSettings' [showColumnChooser]='true' [allowResizing]='true' [gridLines]="lines" frozenRows=0 height=550 
-        (toolbarClick)='clickToolbar($event)' 
+        (load)='load()' (created)="created()" (toolbarClick)='clickToolbar($event)' 
         (beforeBatchSave)="beforeBatchSave($event)" (beforeBatchAdd)="beforeBatchAdd($event)"  
-        (cellEdit)="cellEdit($event)" (cellSave)="cellSave($event)"  (queryCellInfo)='queryCellInfoEvent($event)' (load)='load($event)'>
+        (cellEdit)="cellEdit($event)" (cellSave)="cellSave($event)"  (queryCellInfo)='queryCellInfoEvent($event)'>
         <e-columns>
           <e-column field='id' headerText='ID' textAlign='Right' isPrimaryKey='true' textAlign='Center' width=60
             [visible]='false'>
@@ -144,25 +144,25 @@
             </ng-template>
           </e-column>
           <e-column field='vrijeme_od' headerText='od' editType='dropdownedit' [edit]='timeParams'
-            [customAttributes]='customAttributes' [allowEditing]="true" textAlign='Center' width=60></e-column>
+            [customAttributes]='customAttributes' [allowEditing]="this.editEnable" textAlign='Center' width=60></e-column>
           <e-column field='vrijeme_do' headerText='do' editType='dropdownedit' [edit]='timeParams'
-            [customAttributes]='customAttributes' [visible]='true' [allowEditing]="true" textAlign='Center' width=60>
+            [customAttributes]='customAttributes' [visible]='true' [allowEditing]="this.editEnable" textAlign='Center' width=60>
           </e-column>
           <e-column field='opis_rada' headerText='opisa rada' headerTextAlign="Center"
-            [customAttributes]='customAttributes' [allowEditing]="true" textAlign='Left' width=310></e-column>
+            [customAttributes]='customAttributes' [allowEditing]="this.editEnable" textAlign='Left' width=310></e-column>
 
           <e-column field='sifra_placanja' headerText='Prisustvo' [customAttributes]='customAttributes' [visible]='true'
-            [allowEditing]="true" textAlign='Center' foreignKeyValue='title' foreignKeyField='sifra'
+            [allowEditing]="this.editEnable" textAlign='Center' foreignKeyValue='title' foreignKeyField='sifra'
             [dataSource]='this.sfrevidprisData' cssClass="space" width=95></e-column>
 
 
           <e-column headerText='Multi' width=30 [customAttributes]='customAttributes'>
             <ng-template #template let-data>
               <div *ngIf="(data.button == 1);">
-                <button ejs-button cssClass="e-block e-primary" (click)="multiAdd($event, data.id)">+</button>
+                <button ejs-button cssClass="e-block e-primary" [disabled]="!this.editEnable" (click)="multiAdd($event, data.id)">+</button>
               </div>
               <div *ngIf="(data.button == 2); else elseblock">
-                <button ejs-button cssClass="e-block e-info" (click)="multiDelete($event, data.id)">-</button>
+                <button ejs-button cssClass="e-block e-info" [disabled]="!this.editEnable" (click)="multiDelete($event, data.id)">-</button>
               </div>
             </ng-template>
             <ng-template #elseblock></ng-template>

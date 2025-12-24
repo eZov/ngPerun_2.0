@@ -36,7 +36,7 @@
                     <e-column field='Email' headerText='Korisničko ime' [visible]='false' [allowEditing]="false" textAlign='Right' width=80>
                     </e-column>
                     <e-column field='EmailDef' headerText='Def' [visible]='false' [allowEditing]="false" textAlign='Right' width=20></e-column>
-                    <e-column field='OrgJedNaziv' headerText='Naziv org.jed.' [allowEditing]="false" textAlign='Left'></e-column>
+                    <e-column field='OrgJedNaziv' headerText='Naziv org.jed.' [visible]='false' [allowEditing]="false" textAlign='Left'></e-column>
                     <e-column field='OrgJedNaziv2' headerText='Sektor' [visible]='false' [allowEditing]="false" textAlign='Right'
                       width=120></e-column>
                     <e-column field='OrgJedSifra' headerText='OrgJedSifra' [visible]='false' [allowEditing]="false"
@@ -44,7 +44,7 @@
                     <e-column field='WebUser' headerText='Registrovan' [allowEditing]="false" type='boolean'
                       [displayAsCheckBox]="false" width=40>
                       <ng-template #template let-data>
-                        {{ data.WebUser === true? 'DA' : '' }}
+                        {{ data.WebUser === true? 'DA' : 'NE' }}
                       </ng-template></e-column>
                     <e-column field='WebAccess' headerText='Pristup'  type='boolean' [displayAsCheckBox]="true"
                       editType='booleanedit' [edit]='boolParams' width=40></e-column>

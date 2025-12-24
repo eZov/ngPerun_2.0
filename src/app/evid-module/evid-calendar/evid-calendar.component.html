@@ -4,20 +4,20 @@
   </div>
   <div class="row  w-100 align-items-center">
     <div class="col-sm-8">
-    </div>          
+    </div>
     <div class="col-sm-4">
-    </div>   
-  </div> 
-  <div class="row w-100 align-items-center bg-light mt-1 mb-1">
+    </div>
+  </div>
+  <div class="row w-100 align-items-center bg-light mt-1 mb-1 p-3   border border-1 border-primary">
     <div class="col-sm-6">
-      <p class="h5">{{compTitle}}</p>
+      <p class="h5 text-uppercase">{{compTitle}}</p>
     </div>
     <div class="col-sm-1 text-right">
       <p class="h5">mjesec:&nbsp;{{this._MM}}</p>
     </div>
     <div class="col-sm-1 text-right">
       <p class="h5">godina:&nbsp;{{this._YYYY}}</p>
-    </div>    
+    </div>
     <div class="col-sm-3 bg-light">
     </div>
     <div class="col-sm-1 bg-light">
@@ -25,7 +25,7 @@
         <button ejs-button cssClass="btn-block" iconCss="e-btn-sb-icon sf-icon-back-wf" (click)="goBack()"></button>
       </div>
     </div>
-  </div>   
+  </div>
   <div class="row w-100 align-items-center bg-light">
     <div class="col-sm-2 bg-light">
       <div id="control_wrapper">
@@ -39,104 +39,112 @@
     <div class="col-sm-1 bg-light">
       <button ejs-button cssClass="e-link" (click)="refreshGrid()"><img src="assets/img/refresh.png">
       </button>
-    </div>     
+    </div>
     <div class="col-sm-1 bg-light">
-  
+
     </div>
     <div class="col-sm-5 text-right">
       <mat-expansion-panel>
         <mat-expansion-panel-header class="exppanel-div">
-        <mat-panel-title>Interni god.odm.</mat-panel-title>
-        <mat-panel-description>
-          <!-- preostalo:{{godOdm.yprev_rjes-godOdm.yprev_isk+godOdm.ycurr_rjes-godOdm.ycurr_isk}} dana -->
-        </mat-panel-description>
-    </mat-expansion-panel-header>
-    <div class="divTable blueTable">
-      <div class="divTableHeading">
-        <div class="divTableRow">
-          <div class="divTableHead">Godina</div>
-          <div class="divTableHead">Po rješenju</div>
-          <div class="divTableHead">Iskorišteno</div>
-          <div class="divTableHead">Preostalo</div>
+          <mat-panel-title>Interni god.odm.</mat-panel-title>
+          <mat-panel-description>
+            <!-- preostalo:{{godOdm.yprev_rjes-godOdm.yprev_isk+godOdm.ycurr_rjes-godOdm.ycurr_isk}} dana -->
+          </mat-panel-description>
+        </mat-expansion-panel-header>
+        <div class="divTable blueTable">
+          <div class="divTableHeading">
+            <div class="divTableRow">
+              <div class="divTableHead">Godina</div>
+              <div class="divTableHead">Po rješenju</div>
+              <div class="divTableHead">Iskorišteno</div>
+              <div class="divTableHead">Preostalo</div>
+            </div>
+          </div>
+          <div class="divTableBody">
+            <div class="divTableRow">
+              <div class="divTableCell">{{godOdm?.ycurr!-1}}</div>
+              <div class="divTableCell">{{godOdm?.yprev_rjes!}}</div>
+              <div class="divTableCell">{{godOdm?.yprev_isk!}}</div>
+              <div class="divTableCell">{{godOdm?.yprev_rjes!-godOdm?.yprev_isk!}}</div>
+            </div>
+            <div class="divTableRow">
+              <div class="divTableCell">{{godOdm?.ycurr!}}</div>
+              <div class="divTableCell">{{godOdm?.ycurr_rjes!}}</div>
+              <div class="divTableCell">{{godOdm?.ycurr_isk!}}</div>
+              <div class="divTableCell">{{godOdm?.ycurr_rjes!-godOdm?.ycurr_isk!}}</div>
+            </div>
+            <div class="divTableRow">
+              <div class="divTableCell"></div>
+              <div class="divTableCell"></div>
+              <div class="divTableCell">Ukupno:</div>
+              <div class="divTableCell">
+                {{godOdm?.yprev_rjes!-godOdm?.yprev_isk!+godOdm?.ycurr_rjes!-godOdm?.ycurr_isk!}}</div>
+            </div>
+          </div>
         </div>
-      </div>
-      <div class="divTableBody">
-        <div class="divTableRow">
-          <div class="divTableCell">{{godOdm?.ycurr!-1}}</div>
-          <div class="divTableCell">{{godOdm?.yprev_rjes!}}</div>
-          <div class="divTableCell">{{godOdm?.yprev_isk!}}</div>
-          <div class="divTableCell">{{godOdm?.yprev_rjes!-godOdm?.yprev_isk!}}</div>
-        </div>
-        <div class="divTableRow">
-          <div class="divTableCell">{{godOdm?.ycurr!}}</div>
-        <div class="divTableCell">{{godOdm?.ycurr_rjes!}}</div>
-        <div class="divTableCell">{{godOdm?.ycurr_isk!}}</div>
-          <div class="divTableCell">{{godOdm?.ycurr_rjes!-godOdm?.ycurr_isk!}}</div>
-        </div>
-        <div class="divTableRow">
-          <div class="divTableCell"></div>
-          <div class="divTableCell"></div>
-          <div class="divTableCell">Ukupno:</div>
-          <div class="divTableCell">{{godOdm?.yprev_rjes!-godOdm?.yprev_isk!+godOdm?.ycurr_rjes!-godOdm?.ycurr_isk!}}</div>
-        </div>
-      </div>
-    </div>
       </mat-expansion-panel>
     </div>
     <div class="col-sm-1 bg-light">
-  
+
     </div>
   </div>
 
   <div class="row w-100 align-items-center bg-light mt-1 mb-1">
 
     <div class="col-sm-5 h-100 align-top">
-      <ejs-grid #gridcal >
+      <ejs-grid #gridcal>
         <e-columns>
-          <e-column field='pon'  headerText="pon" width=20 textAlign="Center" [customAttributes]='customAttributes' >
+          <e-column field='pon' headerText="pon" width=20 textAlign="Center" [customAttributes]='customAttributes'>
             <ng-template #template let-data>
-              <button  ejs-button [cssClass]=this.eCalendarService.evidCalendarData[data.pon].css [content]=this.eCalendarService.evidCalendarData[data.pon].day
-                (click)="butClick(data.pon)" [disabled]=this.eCalendarService.evidCalendarData[data.pon].disabled>{{this.eCalendarService.evidCalendarData[data.pon].day}}</button >
+              <button ejs-button [cssClass]=this.eCalendarService.evidCalendarData[data.pon].css
+                [content]=this.eCalendarService.evidCalendarData[data.pon].day (click)="butClick(data.pon)"
+                [disabled]=this.eCalendarService.evidCalendarData[data.pon].disabled>{{this.eCalendarService.evidCalendarData[data.pon].day}}</button>
             </ng-template>
           </e-column>
-          <e-column  field='uto' headerText="uto" width=20 textAlign="Center" [customAttributes]='customAttributes' >
+          <e-column field='uto' headerText="uto" width=20 textAlign="Center" [customAttributes]='customAttributes'>
             <ng-template #template let-data>
-              <button ejs-button [cssClass]=this.eCalendarService.evidCalendarData[data.uto].css [content]=this.eCalendarService.evidCalendarData[data.uto].day
-                (click)="butClick(data.uto)" [disabled]=this.eCalendarService.evidCalendarData[data.uto].disabled>{{this.eCalendarService.evidCalendarData[data.uto].day}}</button>              
+              <button ejs-button [cssClass]=this.eCalendarService.evidCalendarData[data.uto].css
+                [content]=this.eCalendarService.evidCalendarData[data.uto].day (click)="butClick(data.uto)"
+                [disabled]=this.eCalendarService.evidCalendarData[data.uto].disabled>{{this.eCalendarService.evidCalendarData[data.uto].day}}</button>
             </ng-template>
           </e-column>
-          <e-column  field='sri' headerText="sri" width=20 textAlign="Center" [customAttributes]='customAttributes' >
+          <e-column field='sri' headerText="sri" width=20 textAlign="Center" [customAttributes]='customAttributes'>
             <ng-template #template let-data>
-              <button ejs-button [cssClass]=this.eCalendarService.evidCalendarData[data.sri].css [content]=this.eCalendarService.evidCalendarData[data.sri].day
-                (click)="butClick(data.sri)" [disabled]=this.eCalendarService.evidCalendarData[data.sri].disabled>{{this.eCalendarService.evidCalendarData[data.sri].day}}</button>              
+              <button ejs-button [cssClass]=this.eCalendarService.evidCalendarData[data.sri].css
+                [content]=this.eCalendarService.evidCalendarData[data.sri].day (click)="butClick(data.sri)"
+                [disabled]=this.eCalendarService.evidCalendarData[data.sri].disabled>{{this.eCalendarService.evidCalendarData[data.sri].day}}</button>
             </ng-template>
           </e-column>
-          <e-column  field='cet' headerText="čet" width=20 textAlign="Center" [customAttributes]='customAttributes' >
+          <e-column field='cet' headerText="čet" width=20 textAlign="Center" [customAttributes]='customAttributes'>
             <ng-template #template let-data>
-              <button ejs-button [cssClass]=this.eCalendarService.evidCalendarData[data.cet].css [content]=this.eCalendarService.evidCalendarData[data.cet].day
-                (click)="butClick(data.cet)" [disabled]=this.eCalendarService.evidCalendarData[data.cet].disabled>{{this.eCalendarService.evidCalendarData[data.cet].day}}</button>              
+              <button ejs-button [cssClass]=this.eCalendarService.evidCalendarData[data.cet].css
+                [content]=this.eCalendarService.evidCalendarData[data.cet].day (click)="butClick(data.cet)"
+                [disabled]=this.eCalendarService.evidCalendarData[data.cet].disabled>{{this.eCalendarService.evidCalendarData[data.cet].day}}</button>
             </ng-template>
           </e-column>
-          <e-column  field='pet' headerText="pet" width=20 textAlign="Center" [customAttributes]='customAttributes' >
+          <e-column field='pet' headerText="pet" width=20 textAlign="Center" [customAttributes]='customAttributes'>
             <ng-template #template let-data>
-              <button ejs-button [cssClass]=this.eCalendarService.evidCalendarData[data.pet].css [content]=this.eCalendarService.evidCalendarData[data.pet].day
-                (click)="butClick(data.pet)" [disabled]=this.eCalendarService.evidCalendarData[data.pet].disabled>{{this.eCalendarService.evidCalendarData[data.pet].day}}</button>              
+              <button ejs-button [cssClass]=this.eCalendarService.evidCalendarData[data.pet].css
+                [content]=this.eCalendarService.evidCalendarData[data.pet].day (click)="butClick(data.pet)"
+                [disabled]=this.eCalendarService.evidCalendarData[data.pet].disabled>{{this.eCalendarService.evidCalendarData[data.pet].day}}</button>
             </ng-template>
           </e-column>
-          <e-column  field='sub' headerText="sub" width=20 textAlign="Center" [customAttributes]='customAttributes' >
+          <e-column field='sub' headerText="sub" width=20 textAlign="Center" [customAttributes]='customAttributes'>
             <ng-template #template let-data>
-              <button ejs-button [cssClass]=this.eCalendarService.evidCalendarData[data.sub].css [content]=this.eCalendarService.evidCalendarData[data.sub].day
-                (click)="butClick(data.sub)" [disabled]=this.eCalendarService.evidCalendarData[data.sub].disabled>{{this.eCalendarService.evidCalendarData[data.sub].day}}</button>              
+              <button ejs-button [cssClass]=this.eCalendarService.evidCalendarData[data.sub].css
+                [content]=this.eCalendarService.evidCalendarData[data.sub].day (click)="butClick(data.sub)"
+                [disabled]=this.eCalendarService.evidCalendarData[data.sub].disabled>{{this.eCalendarService.evidCalendarData[data.sub].day}}</button>
             </ng-template>
           </e-column>
-          <e-column  field='ned' headerText="ned" width=20 textAlign="Center" [customAttributes]='customAttributes' >
+          <e-column field='ned' headerText="ned" width=20 textAlign="Center" [customAttributes]='customAttributes'>
             <ng-template #template let-data>
-              <button ejs-button [cssClass]=this.eCalendarService.evidCalendarData[data.ned].css [content]=this.eCalendarService.evidCalendarData[data.ned].day
-                (click)="butClick(data.ned)" [disabled]=this.eCalendarService.evidCalendarData[data.ned].disabled>{{this.eCalendarService.evidCalendarData[data.ned].day}}</button>              
+              <button ejs-button [cssClass]=this.eCalendarService.evidCalendarData[data.ned].css
+                [content]=this.eCalendarService.evidCalendarData[data.ned].day (click)="butClick(data.ned)"
+                [disabled]=this.eCalendarService.evidCalendarData[data.ned].disabled>{{this.eCalendarService.evidCalendarData[data.ned].day}}</button>
             </ng-template>
-          </e-column>                                                            
+          </e-column>
         </e-columns>
-      </ejs-grid> 
+      </ejs-grid>
     </div>
     <div class="col-sm-1">
     </div>
@@ -144,12 +152,12 @@
       <ejs-grid #gridsum [allowPaging]="false" [allowSorting]="false" allowTextWrap='true' [allowFiltering]="false"
         [allowGrouping]="false" [showColumnChooser]='true' [allowResizing]='true' [gridLines]="lines"
         [allowSelection]="false" [selectionSettings]="selectionOptions" rowHeight=27
-        (queryCellInfo)='customiseCell($event)' >
+        (queryCellInfo)='customiseCell($event)'>
         <e-columns>
           <e-column field='itemtype' headerText='' textAlign='Center' width=20 [visible]='true'> </e-column>
           <e-column headerText="" [allowEditing]="false" width=20 textAlign="Center">
             <ng-template #template let-data>
-              <ejs-checkbox label="" cssClass="e-custom" (change)="onCheckChange(data.itemType)"
+              <ejs-checkbox label="" cssClass="e-custom" [disabled]="this.butSave.disabled" (change)="onCheckChange(data.itemType)"
                 [checked]="(data.itemType < 0) == true"></ejs-checkbox>
             </ng-template>
           </e-column>
@@ -179,66 +187,53 @@
     <div class="col-sm-2 text-right">
       <button ejs-button id='butSend' #butSend (click)="evidDnevnikClick()">Podnesi</button>
     </div>
-    <!-- <div  class="col-sm-2 text-right">
-      <button ejs-button id='butUnSend' #butUnSend  cssClass="btn-block e-danger" iconCss="e-btn-sb-icon sf-icon-mail-delete-wf" (click)="evidDnevnikUnlock()">Opozovi</button>
-    </div>         -->
     <div class="col-sm-1 bg-light">
-      <div *ngIf="this.eCalendarService.stop === true && this.eCalendarService.lockedExt === false">
-        <ejs-tooltip #tooltip
-          content='Kontrola evidencija je u toku. Ako niste poslali evidencije, to još uvijek možete učiniti!'>
+      <div *ngIf="this.evidProcesService._evdKontrolaUToku === true">
+        <ejs-tooltip #tooltip [content]="evidText.Kontrola">
           <span class="e-icons sf-icon-timer-wf"></span>
         </ejs-tooltip>
       </div>
-      <div *ngIf="this.eCalendarService.lockedExt === true &&  this.eCalendarService.stop === true">
-        <ejs-tooltip #tooltip
-          content='Evidencije su kontrolisane i preuzete za u šihtaricu!'>
+      <div *ngIf="this.evidProcesService._evdKontrolisao === true &&  this.evidProcesService._evdLockedExt === true">
+        <ejs-tooltip #tooltip [content]="evidText.Preuzete">
           <span class="e-icons sf-icon-lock"></span>
         </ejs-tooltip>
-      </div>  
-    </div>  
+      </div>
+    </div>
     <div class="col-sm-2 text-right">
-      <button ejs-button id='butSave' #butSave cssClass="btn-block e-info" iconCss="e-btn-sb-icon sf-icon-save" 
-      [disabled]="this.eCalendarService.saveButtOn != true" (click)="saveEvid()">Spasi</button>
-    </div>    
+      <button ejs-button id='butSave' #butSave cssClass="btn-block e-info" iconCss="e-btn-sb-icon sf-icon-save"
+        (click)="saveEvid()">Spasi</button>
+    </div>
     <div class="col-sm-1 bg-light">
 
-    </div>    
+    </div>
     <div class="col-sm-2 text-right">
-      <button ejs-button cssClass="btn-block e-warning" iconCss="e-btn-sb-icon sf-icon-table_02" 
-      [disabled]="!(this.eCalendarService._selEvid != undefined && this.eCalendarService.sendButtOn === true)" (click)="autoPopulate()">popuna</button>
+      <button ejs-button id='butPopuna' #butPopuna cssClass="btn-block e-warning"
+        iconCss="e-btn-sb-icon sf-icon-table_02" (click)="autoPopulate()">popuna</button>
     </div>
     <div class="col-sm-1 text-right">
 
     </div>
     <div class="col-sm-2 text-right">
-      <button ejs-button cssClass="btn-block e-warning" iconCss="e-btn-sb-icon sf-icon-delete-the-table"
-       [disabled]="!(this.eCalendarService._selEvid != undefined && this.eCalendarService.sendButtOn === true)" (click)="autoDelete()">brisanje</button>
+      <button ejs-button id='butBrisanje' #butBrisanje cssClass="btn-block e-warning"
+        iconCss="e-btn-sb-icon sf-icon-delete-the-table" (click)="autoDelete()">brisanje</button>
     </div>
     <div class="col-sm-1 bg-light">
     </div>
   </div>
-  <div class="row w-100 align-items-center bg-light mt-1 mb-1" *ngIf="this.userSessionService.user.role==='sekretarica'">
+  <div class="row w-100 align-items-center bg-light mt-1 mb-1"
+    *ngIf="this.userSessionService.user.role==='sekretarica'">
     <div class="col-sm-5 text-right">
-      <ejs-checkbox label="Omogući unos [zaključanih] evidencija" cssClass="e-danger"  [(ngModel)]="this.eCalendarService.chkSuperLock"></ejs-checkbox>      
-    </div>    
-    <div class="col-sm-1 bg-light">
-    </div>    
-    <div class="col-sm-2 text-right">
+      <ejs-checkbox label="Omogući unos [zaključanih] evidencija" cssClass="e-danger"
+        [(ngModel)]="this.eCalendarService.chkSuperLock"></ejs-checkbox>
     </div>
-    <div class="col-sm-1 text-right">
+    <div class="col-sm-7 bg-light">
     </div>
-    <div class="col-sm-2 text-right">
-    </div>
-    <div class="col-sm-1 bg-light">
-    </div>
-  </div>  
+  </div>
   <div class="row w-100 align-items-center bg-light">
     <div class="col-sm-6 bg-light">
-     
     </div>
     <div class="col-sm-6 text-right">
-
-    </div>    
+    </div>
   </div>
 
 </div>

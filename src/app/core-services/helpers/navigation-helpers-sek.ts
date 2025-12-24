@@ -158,13 +158,17 @@ export function selectSek(
             break;
         }
         case 'evid_dnevnik': {
-            router.navigate(['/evid_dnevnik']);
+            router.navigate(['evid/evid_dnevnik2']);
             break;
         }
         case 'evid_kontrola': {
             router.navigate(['evid/evid_kontrola']);
             break;
         }
+        case 'evid_notification': {
+            router.navigate(['evid/evid_notification']);
+            break;
+        }        
         default: {
             //statements; 
             break;

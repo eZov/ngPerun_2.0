@@ -13,6 +13,14 @@ export function selectAdm(
             router.navigate(['admin/emp_users']);
             break;
         }
+        case 'admin/emp_users-roles': {
+            router.navigate(['admin/emp_users-roles']);
+            break;
+        }  
+        case 'admin/emp_users-orgroles': {
+            router.navigate(['admin/emp_users-orgroles']);
+            break;
+        }               
         case 'adm_orgrole': {
             router.navigate(['/adm_orgrole']);
             break;

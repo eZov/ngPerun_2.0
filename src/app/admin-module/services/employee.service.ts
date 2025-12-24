@@ -65,7 +65,7 @@ export class EmployeeService {
           "emp_username": employee.emp_username,
           "work_station": 0,
           "emp_email_exclude": null
-      }
+        }
         return this.httpCoreService.postData<boolean>(`${this.httpCoreService.baseUrl}${_ins}`, _employeeIns).pipe(
           switchMap((value: boolean) => {
             return of(value);

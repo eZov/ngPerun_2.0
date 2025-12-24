@@ -8,7 +8,8 @@ import { AdmEmployee } from '../model/adm-employees.model';
 import { AdmEmployeesComponent } from './adm-employees/adm-employees.component';
 import { AdmUsersComponent } from './adm-users/adm-users.component';
 import { AdmEmployeesTableService } from '../services/adm-employees-table.service';
-
+import { AdmUsersRolesComponent } from './adm-users-roles/adm-users-roles.component';
+import { AdmUsersOrgRolesComponent } from './adm-users-orgroles/adm-users-orgroles.component';
 const routes: Routes = [
   {
     path: 'org_organizacija',
@@ -32,7 +33,25 @@ const routes: Routes = [
       orgList: OrgListService,
       //orgListpg: OrgPGListService,
       },
-  },    
+  },
+  {
+    path: 'emp_users-roles',
+    component: AdmUsersRolesComponent,
+    resolve: {
+      //admEmployeesTable: AdmEmployeesTableService, // nepotrebno, proziva uposlenike usere
+      orgList: OrgListService,
+      //orgListpg: OrgPGListService,
+      },
+  },        
+  {
+    path: 'emp_users-orgroles',
+    component: AdmUsersOrgRolesComponent,
+    resolve: {
+      //admEmployeesTable: AdmEmployeesTableService, // nepotrebno, proziva uposlenike usere
+      orgList: OrgListService,
+      //orgListpg: OrgPGListService,
+      },
+  },     
 ];
 
 @NgModule({

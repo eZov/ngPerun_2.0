@@ -10,7 +10,7 @@ import {
   IEditCell, CellEditArgs, BeforeBatchAddArgs, QueryCellInfoEventArgs, GridLine, CellSaveArgs, ForeignKeyService,
   CellDeselectEventArgs, RowDeselectEventArgs, SelectionSettingsModel
 } from "@syncfusion/ej2-angular-grids";
-import { closest, EmitType, MouseEventArgs } from "@syncfusion/ej2-base";
+import { closest, EmitType, isNullOrUndefined, MouseEventArgs } from "@syncfusion/ej2-base";
 import { Query } from "@syncfusion/ej2-data";
 import { ButtonComponent } from "@syncfusion/ej2-angular-buttons";
 import { CalendarView, ChangedEventArgs, DatePickerComponent } from "@syncfusion/ej2-angular-calendars";
@@ -29,7 +29,8 @@ import { EvidDnevnik } from "../../model/evid-dnevnik.model";
 import { EvidTime } from "../../model/evid-time.model";
 import { EvidGodOdm } from "../../model/evid-gododm.model";
 import { EmployeeRec } from "../../model/employeerec.model";
-
+import { EvidProcesService } from "../services/evid-proces.service";
+import { EvidText } from '../evid-text';
 
 @Component({
   selector: "nga-evid-dnevnik2",
@@ -43,6 +44,7 @@ export class EvidDnevnik2Component implements OnInit, AfterViewInit {
 
   public sfrevidprisData: EvidSifra[] = new Array<EvidSifra>();
 
+  // GRID /////////////////////////////////////////////////////////
   @ViewChild("grid", { static: false })
   public grid!: GridComponent;
 
@@ -59,10 +61,12 @@ export class EvidDnevnik2Component implements OnInit, AfterViewInit {
 
   public boolParams!: IEditCell;
   public timeParams!: IEditCell;
+  // ////////////////////////////////////////////////////////////
 
+  public evidText = EvidText;
   public flagAutoSave = false;
 
-  //DropDoenList u grid - šifre
+  //DropDownList u grid - šifre
   public sfrfields: Object = { text: "title", value: "sifra" };
 
   isLoading = true;
@@ -70,13 +74,13 @@ export class EvidDnevnik2Component implements OnInit, AfterViewInit {
 
   private rowIdAdd: number = -100;
 
-  thisUrl: string;
+  thisUrl!: string;
 
   selectedRowIndex!: number;
   public compTitle!: string;
   public compName!: string;
 
-  // DatePicker
+  // DatePicker ///////////////////////////////////////////////////////
   @ViewChild("datePicker", { static: false })
   public dp!: DatePickerComponent;
 
@@ -296,15 +300,19 @@ export class EvidDnevnik2Component implements OnInit, AfterViewInit {
   //HACK ako je ovo false izbacuje grešku....
   public _butUnSendDisable: boolean = true;
 
-  public _empid: number;
+  public _empid!: number;
   public _MM!: number;
   public _YYYY!: number;
 
 
   manualSave$ = new Subject<any>();   //automatsko spašavanje dnevnika
 
+  // Button SEND
   @ViewChild("butSend", { static: false })
   public butSend!: ButtonComponent;
+  // //////////////////////////////////////////////////////////
+
+  public editEnable: boolean = false;
 
   constructor(
     public usersession: UserSessionService,
@@ -313,16 +321,10 @@ export class EvidDnevnik2Component implements OnInit, AfterViewInit {
     private router: Router,
     public restDataSource: RestDataSource,
     public eDneService: EvidDnevnikService,
+    public evidProcesService: EvidProcesService,
     private location: Location,
     private timeListService: TimeListService
   ) {
-
-    this.thisUrl = this.route.snapshot.url[0].path;
-    this._empid = this.route.snapshot.params["empid"];
-    if (this._empid == null) {
-      this._empid = this.usersession.empId;
-    }
-
   }
 
   ngOnInit() {
@@ -330,11 +332,15 @@ export class EvidDnevnik2Component implements OnInit, AfterViewInit {
       this.showLoader = val;
     });
 
+    this.thisUrl = this.route.snapshot.url[0].path;
+    this._empid = this.route.snapshot.params["empid"] != undefined ? +this.route.snapshot.params["empid"] : this.usersession.user.empId;
+    console.log(`Dnevnik nginit: ${this._empid} - ${this.thisUrl}`);
+
     let _emp: EmployeeRec = this.route.snapshot.data["evidemp"];
     this.compTitle = this.eDneService.getTitle(_emp.work_station ?? -1);
 
     if (_emp != undefined) {
-      this.compTitle = `${this.compTitle}:  ${_emp.FirstName} ${_emp.LastName} (${_emp.EmployeeID?.toString()})`;
+      this.compTitle = `${this.compTitle}  ${_emp.FirstName} ${_emp.LastName} (${_emp.EmployeeID?.toString()})`;
       this.compName = ``;
     } else {
       this.compName = this.usersession.user.nameid;
@@ -400,11 +406,11 @@ export class EvidDnevnik2Component implements OnInit, AfterViewInit {
 
 
     let _dt = this.usersession.firstDate;
-    this._MM = this.route.snapshot.params["mm"] != undefined? +this.route.snapshot.params["mm"] : _dt.getMonth() + 1; //HACK: index za mjesec počinje od 0
-    this._YYYY = this.route.snapshot.params["yyyy"] != undefined? +this.route.snapshot.params["yyyy"] : _dt.getFullYear();
-    console.log(`Dnevnik construct-0: ${this._MM} - ${_dt.getMonth() }`);
+    this._MM = this.route.snapshot.params["mm"] != undefined ? +this.route.snapshot.params["mm"] : _dt.getMonth() + 1; //HACK: index za mjesec počinje od 0
+    this._YYYY = this.route.snapshot.params["yyyy"] != undefined ? +this.route.snapshot.params["yyyy"] : _dt.getFullYear();
+    console.log(`Dnevnik construct-0: ${this._MM} - ${_dt.getMonth()}`);
 
-    this.ddlM = this._MM; 
+    this.ddlM = this._MM;
     this.ddlY = this._YYYY;
 
 
@@ -412,20 +418,21 @@ export class EvidDnevnik2Component implements OnInit, AfterViewInit {
     /* SUBSCRIPTIONS START */
     const sub1 = this.eDneService.getGodOdm().subscribe((godOdmObs) => {
       this.godOdm = godOdmObs;
-      console.log("Dnevnik construct-1: " + JSON.stringify(this.godOdm));
+      console.log("evid-dnevnik.component subs1: " + JSON.stringify(this.godOdm));
     });
     this.subs.push(sub1);
 
-    const sub2 = this.eDneService.getBtnPodnesi().subscribe((btnPodnesi) => {
-      if (this.butSend != undefined) {
-        this.butSend.cssClass = btnPodnesi.cssClass;
-        this.butSend.iconCss = btnPodnesi.iconCss;
-        this.butSend.content = btnPodnesi.content;
-        this.butSend.disabled = !btnPodnesi.enabled;
-      }
-      console.log("Dnevnik construct-2: " + JSON.stringify(btnPodnesi));
-    });
-    this.subs.push(sub2);
+    //HACK: vrlo komplikovano rješenje, odbačeno, NE KORISTI SE
+    // const sub2 = this.eDneService.getBtnPodnesi().subscribe((btnPodnesi) => {
+    //   if (this.butSend != undefined) {
+    //     this.butSend.cssClass = btnPodnesi.cssClass;
+    //     this.butSend.iconCss = btnPodnesi.iconCss;
+    //     this.butSend.content = btnPodnesi.content;
+    //     this.butSend.disabled = !btnPodnesi.enabled;
+    //   }
+    //   console.log("evid-dnevnik.component subs2: " + JSON.stringify(btnPodnesi));
+    // });
+    // this.subs.push(sub2);
 
     const sub3 = this.eDneService.getEvidPrisSifra().subscribe((evidPrisSifra) => {
       this.sfrevidprisData = evidPrisSifra;
@@ -433,10 +440,40 @@ export class EvidDnevnik2Component implements OnInit, AfterViewInit {
     this.subs.push(sub3);
 
     const sub4 = this.eDneService.evidDnevnikDataObs.subscribe((result) => {
-      this.grid.dataSource = result
+
+      setTimeout(() => {
+        this.grid.refreshColumns(); // 
+        //HACK: refreshColumns se mora pozvati jer se dobije grid bez podataka 
+        // //(bez timera ista greška, vrijednost timera može biti 1 ms i radiće u dev okruženju)
+        this.grid.dataSource = result
+        this.grid.refresh(); // 
+        console.log(`evid-dnevnik.component subs4 timeout: ...`);
+      }, 10);
+
     });
     this.subs.push(sub4);
-    /* SUBSCRIPTIONS END */
+
+    const sub5 = this.evidProcesService.sndBtnDis$.subscribe({
+      next: (value) => {
+        if (this.butSend != undefined) {
+          console.log(`evid-dnevnik.component subs5: ${JSON.stringify(value)}`);
+
+          this.butSend.disabled = value.disabled;
+          this.butSend.content = value.title;
+          this.butSend.cssClass = value.title == 'Podnesi' ? 'btn-block e-primary' : 'btn-block e-danger';
+          this.butSend.iconCss = value.title == 'Podnesi' ? 'e-btn-sb-icon sf-icon-mail-all-wf' : 'e-btn-sb-icon sf-icon-mail-delete-wf';
+
+          this.editEnable = value.disabled || value.title == 'Opozovi' ? false : true;
+          this.grid.refreshColumns(); // 
+        }
+        //this.butSend.disabled = value;
+      },
+      error: (err) => {
+        console.log(err);
+      }
+    });
+    this.subs.push(sub5);
+    // // SUBSCRIPTIONS END ///////////////////////////////////////////////////////////////////////////////
 
 
     this.eDneService.setEvidPrisSifra(this.route.snapshot.data["evidsifra"]);
@@ -445,13 +482,13 @@ export class EvidDnevnik2Component implements OnInit, AfterViewInit {
 
     this.eDneService.evidDnevnikData = this.route.snapshot.data["eviddnevnik"];
     this.eDneService.setGodOdm(this.route.snapshot.data["evidgododm"]);
-    this.eDneService.sendDisableSet();
+    //this.eDneService.sendDisableSet();
 
     this.loaderService.display(false);
   }
 
   ngAfterViewInit() {
-    this.dp.value = new Date(this._YYYY, this._MM -1 , 1); //HACK: index za mjesec počinje od 0. mjesec 0 je januar
+    this.dp.value = new Date(this._YYYY, this._MM - 1, 1); //HACK: index za mjesec počinje od 0. mjesec 0 je januar
     this.eDneService.evidDnevnikDataObs = this.route.snapshot.data["eviddnevnik"];
 
     this.countRowsGrid();
@@ -476,7 +513,7 @@ export class EvidDnevnik2Component implements OnInit, AfterViewInit {
 
             this.eDneService.evidDnevnikDataObs = result;
 
-            this.eDneService.sendDisableSet();
+            //this.eDneService.sendDisableSet();
 
             this.eDneService.getGoStatus(this._empid, this.ddlY);
           } else {
@@ -537,7 +574,7 @@ export class EvidDnevnik2Component implements OnInit, AfterViewInit {
       }
 
       case false: {
-        this.evidDnevnikUnlock();
+        this.evidDnevnikSend(false);
         break;
       }
     }
@@ -595,82 +632,64 @@ export class EvidDnevnik2Component implements OnInit, AfterViewInit {
       );
   }
 
-  evidDnevnikSend() {
+  evidDnevnikSend(sendFlag: boolean = true) {
     this.loaderService.display(true);
 
-    this.restDataSource
-      .getEvidDnevnikSend(this._empid, this._MM, this._YYYY, true)
-      .subscribe(
-        (result) => {
-          this.eDneService.evidDnevnikDataObs = result;
+    const sub6 = this.eDneService.sendEvidDnevnikData(this._empid, this._MM, this._YYYY, sendFlag).subscribe({
+      next: (result: boolean) => {
+        if (result) {
 
-          this.eDneService.sendDisableSet();
-
-          this.eDneService.getGoStatus(this._empid, this.ddlY);
-          this.loaderService.display(false);
-          //TODO: refreshgrid ubačen zbog problema sa button send i unsend
-          this.refreshGrid();
-        },
-        (err) => {
-          console.log(err);
-          this.loaderService.display(false);
         }
-      );
+        this.loaderService.display(false);
+      },
+      error: (err: any) => {
+        console.log(err);
+        this.loaderService.display(false);
+      }
+    });
+    this.subs.push(sub6);
   }
-
-  evidDnevnikUnlock() {
-    this.loaderService.display(true);
-
-    this.restDataSource
-      .getEvidDnevnikSend(this._empid, this._MM, this._YYYY, false)
-      .subscribe(
-        (result) => {
-          // this.eDneService.evidDnevnikData = result;
-
-          // this.grid.dataSource =
-          //   this.eDneService.processEvidDnevnikExtData(result);
-          this.eDneService.evidDnevnikDataObs = result;
-
-          this.eDneService.sendDisableSet();
-
-          this.eDneService.getGoStatus(this._empid, this.ddlY);
-
-          this.loaderService.display(false);
-        },
-        (err) => {
-          console.log(err);
-          this.loaderService.display(false);
-        }
-      );
-  }
-
-
-
 
 
   // EVENTS /////////////////////////////////////////////////////////////////////////
   // HACK: grid single click edit
-  load(args: any) {
-    // HACK: stavljen comment jer ne radi
-    // this.grid.element.addEventListener("mousedown", (e: MouseEventArgs) => {
-    //   if ((e.target as HTMLElement).classList.contains("e-rowcell")) {
-    //     let index: number = parseInt(
-    //       (e.target as HTMLElement).getAttribute("Index")
-    //     );
-    //     let colindex: number = parseInt(
-    //       (e.target as HTMLElement).getAttribute("aria-colindex")
-    //     );
-    //     let field: string = this.grid.getColumns()[colindex].field;
-    //     this.grid.editModule.editCell(index, field);
-    //   }
-    // });
+  created = () => {
+    (this.grid as GridComponent).getContentTable().addEventListener('click', (args) => {
+        if ((args.target as HTMLElement).classList.contains('e-rowcell')) {
+            (this.grid as GridComponent).editModule.editCell(parseInt(((args.target as HTMLElement).getAttribute('index') as string)),
+            (this.grid as GridComponent).getColumnByIndex(parseInt((args.target as HTMLElement).getAttribute('data-colindex') as string)).field);
+        }
+    });
+};
 
-    // GRID EVENTS START /////////////////////////////////////////////////////////////////////////
-    //  
-    this.grid.element.addEventListener(
-      "keydown",
-      this.keyDownHandler.bind(this)
-    );
+  load = () => {
+    (this.grid as GridComponent).element.addEventListener('keydown', (e) => {
+      var closesttd = (e.target as HTMLElement).closest('td');
+      if (e.keyCode === 39 && !isNullOrUndefined(((closesttd as HTMLTableCellElement).nextSibling as HTMLElement))) {
+        this.editACell(((closesttd as HTMLTableCellElement).nextSibling as HTMLElement));
+      }
+      if (e.keyCode === 37 && !isNullOrUndefined(((closesttd as HTMLTableCellElement).previousSibling as HTMLElement)) &&
+        !(this.grid as GridComponent).getColumnByIndex(
+          parseInt((((closesttd as HTMLTableCellElement).previousSibling as HTMLElement).getAttribute('data-colindex') as string))).isPrimaryKey) {
+        this.editACell(((closesttd as HTMLTableCellElement).previousSibling as HTMLElement));
+      }
+      if (e.keyCode === 40 && !isNullOrUndefined((((closesttd as HTMLTableCellElement).closest('tr') as HTMLTableRowElement).nextSibling as HTMLElement))) {
+        this.editACell(
+          (((closesttd as HTMLTableCellElement).closest('tr') as HTMLTableRowElement).nextSibling as HTMLElement).querySelectorAll('td')[
+          parseInt(((closesttd as HTMLTableCellElement).getAttribute('data-colindex') as string))]);
+      }
+      if (e.keyCode === 38 && !isNullOrUndefined((((closesttd as HTMLTableCellElement).closest('tr') as HTMLTableRowElement).previousSibling as ChildNode))) {
+        this.editACell(
+          (((closesttd as HTMLTableCellElement).closest('tr') as HTMLTableRowElement).previousSibling as HTMLElement).querySelectorAll('td')[
+          parseInt(((closesttd as HTMLTableCellElement).getAttribute('data-colindex') as string))]);
+      }
+    });
+  };
+
+  public editACell(args: HTMLElement) {
+    (this.grid as GridComponent).editModule.editCell(
+      parseInt((args.getAttribute('index') as string)),
+      (this.grid as GridComponent).getColumnByIndex(parseInt(args.getAttribute('data-colindex') as string)).field);
   }
 
   keyDownHandler(e: any) {
@@ -1096,7 +1115,7 @@ export class EvidDnevnik2Component implements OnInit, AfterViewInit {
     this.eDneService.updEvidDnevnikData(_evidDnevnikData2).subscribe({
       next: (result: boolean) => {
         if (result) {
-          this.eDneService.sendDisableSet();
+          //this.eDneService.sendDisableSet();
           this.eDneService.getGoStatus(this._empid, this.ddlY);
         }
         this.loaderService.display(false);
@@ -1153,7 +1172,7 @@ export class EvidDnevnik2Component implements OnInit, AfterViewInit {
   public refreshGrid() {
     this.loaderService.display(true);
 
-    this.eDneService.refreshEvidDnevnikData(this.usersession.user.empId, this._MM, this._YYYY, this.ddlY);
+    this.eDneService.refreshEvidDnevnikData(this._empid, this._MM, this._YYYY, this.ddlY);
   }
 
   goBack() {

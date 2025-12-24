@@ -5,26 +5,33 @@
   <div class="row w-100 align-items-center">
     <div class="col-sm-12 p-2"></div>
   </div>
+  <div class="row w-100 align-items-center bg-light mt-1 mb-1 p-3   border border-1 border-primary">
+    <div class="col-sm-6">
+      <p class="h5 text-uppercase">{{compTitle}}</p>
+    </div>
+  </div>  
   <div class="row  w-100 align-items-center">
     <div class="col-sm-4">
       <table id="property" title="Properties" style="width: 100%; margin:10px">
         <tr>
           <td style="padding:5px; width:50%">
-             <button ejs-button cssClass="e-block e-outline e-customon" (click)="onKontrola()">Postavi
-              kontrole</button></td>
+            <button ejs-button cssClass="e-block e-outline e-customon" (click)="onKontrola()">Postavi
+              kontrole</button>
+          </td>
           <td>
-             <button ejs-button cssClass="e-block e-outline e-customon"  (click)="onLock()">Zaključaj</button></td>
+            <button ejs-button cssClass="e-block e-outline e-customon" (click)="onLock()">Zaključaj</button>
+          </td>
         </tr>
         <tr>
           <td style="padding:5px; width:50%">
-            <button ejs-button cssClass="e-block e-outline e-customoff"  (click)="offKontrola()">Ukini kontrole</button>
+            <button ejs-button cssClass="e-block e-outline e-customoff" (click)="offKontrola()">Ukini kontrole</button>
           </td>
           <td>
-            <button ejs-button cssClass="e-block e-outline e-customoff"  (click)="offLock()">Otključaj</button>
+            <button ejs-button cssClass="e-block e-outline e-customoff" (click)="offLock()">Otključaj</button>
           </td>
         </tr>
       </table>
-    
+
     </div>
     <div class="col-sm-2">
       <table id="property" title="Properties" style="width: 100%; margin:10px">
@@ -52,7 +59,7 @@
       </button>
     </div>
     <div class="col-sm-2">
-    </div>    
+    </div>
     <div class="col-sm-2">
       <div class="e-float-input" style="display: inline-block;">
         <input type="text" class="searchtext" [value]="gridSearch" />
@@ -61,8 +68,8 @@
       </div>
     </div>
     <div class="col-sm-1">
-      <button ejs-button  cssClass="e-custom" iconCss="e-icons e-search" id='search' (click)='searchGrid()'></button>
-    </div>    
+      <button ejs-button cssClass="e-custom" iconCss="e-icons e-search" id='search' (click)='searchGrid()'></button>
+    </div>
   </div>
   <div class="row  w-100 align-items-center">
 
@@ -71,85 +78,91 @@
   </div>
   <div class="row w-100 align-items-center">
     <div class="col-sm-12">
-      <ejs-grid #grid [editSettings]='editSettings' [toolbar]='toolbar' [allowPaging]="true" [allowSorting]="true"
-        [sortSettings]='sortOptions' allowTextWrap='true' [allowFiltering]="false" [allowGrouping]="false"
-        [pageSettings]='pageSettings' [showColumnChooser]='true' [allowResizing]='true' [gridLines]="lines"
+      <ejs-grid #grid [editSettings]='editSettings' [toolbar]='toolbar' [sortSettings]='sortOptions'
+        [pageSettings]='pageSettings' [gridLines]="lines" [allowPaging]="true" [allowSorting]="true"
+        [showColumnChooser]='true' [allowResizing]='true' allowTextWrap='true' [allowFiltering]="false"
+        [allowGrouping]="false" 
         (queryCellInfo)='customiseCell($event)' (beforeBatchSave)="beforeBatchSave($event)"
         (rowSelected)='rowSelected($event)' (dataBound)='dataBound($event)' (load)='load($event)'
-        (cellEdit)="cellEdit($event)"  (actionComplete)="actionComplete($event)">
+        (cellEdit)="cellEdit($event)" (actionComplete)="actionComplete($event)">
         <e-columns>
           <e-column field='id' headerText='ID' textAlign='Right' isPrimaryKey='true' textAlign='Center' width=60
             [visible]='false'></e-column>
-            <e-column field='employeeID' headerText='id' textAlign='Center' width=40 [allowEditing]="false"
+          <e-column field='employeeID' headerText='id' textAlign='Center' width=40 [allowEditing]="false"
             [visible]='true'></e-column>
-          <e-column field='empFirstName' headerText='ime' headerTextAlign="Right" [customAttributes]='customAttributes' [allowEditing]="false"
-            textAlign='Right' width=60></e-column>
-            <e-column field='empLastName' headerText='prezime' headerTextAlign="Left" [customAttributes]='customAttributes' [allowEditing]="false"
-            textAlign='Left' width=80></e-column>
-            <!-- <e-column field='MM' headerText='Mje' textAlign='Right'  textAlign='Center' width=40 [allowEditing]="false"
+          <e-column field='empFirstName' headerText='ime' headerTextAlign="Right" [customAttributes]='customAttributes'
+            [allowEditing]="false" textAlign='Right' width=60></e-column>
+          <e-column field='empLastName' headerText='prezime' headerTextAlign="Left"
+            [customAttributes]='customAttributes' [allowEditing]="false" textAlign='Left' width=80></e-column>
+          <!-- <e-column field='MM' headerText='Mje' textAlign='Right'  textAlign='Center' width=40 [allowEditing]="false"
             [visible]='true'></e-column>
             <e-column field='YYYY' headerText='God' textAlign='Right'  textAlign='Center' width=40 [allowEditing]="false"
-            [visible]='true'></e-column> -->            
-            <e-column headerText='mje-god' width='50' textAlign='Center'>
-              <ng-template #template let-data>
-                  <div class="image">
-                    {{data.MM}}-{{data.YYYY}}
-                  </div>
-              </ng-template>
-          </e-column>            
-            <e-column headerText="kalendar" [customAttributes]='customAttributes' width=60  textAlign='Center'  [allowEditing]="false">
-              <ng-template #template let-data>
-                <!-- <a (click)="Click($event)" href=#>{{data.EmployeeID}}</a> -->
-                <button ejs-button *ngIf="data.id > 0" cssClass="e-info" 
-                  (click)="gotoKalendar(data.employeeID, data.MM, data.YYYY)">Kalendar
-                </button>
-                <button ejs-button *ngIf="data.id < 0" cssClass="e-primary" 
-                  (click)="gotoKalendar(data.employeeID, data.MM, data.YYYY)">Kreiraj
-                </button>                
-              </ng-template>
-            </e-column>     
-            <e-column field='evd_stopped' headerText='opozvan / neispravan' width='60' textAlign='Center' type='boolean'
-              [allowEditing]="true" [template]="chkboxstopped">
-              <ng-template #chkboxstopped let-data>
-                <ejs-checkbox label="" cssClass="e-success"  [checked]="data.evd_stopped > 0? true : false" [disabled]="(data.evd_kontrolisao > 0)&&(!data.locked_ext)? false : true"
-                  (change)='changeOpoziv($event, data)'></ejs-checkbox>
-              </ng-template>
-            </e-column>                      
-            <e-column headerText="dnevnik" [customAttributes]='customAttributes' width=60  textAlign='Center'  [allowEditing]="false">
-              <ng-template #template let-data>
-                <!-- <a (click)="Click($event)" href=#>{{data.EmployeeID}}</a> -->
-                <button ejs-button *ngIf="data.id > 0" cssClass="e-info"  
-                  (click)="gotoEvidencija(data.employeeID, data.MM, data.YYYY)">Dnevnik
-                </button>
-                <button ejs-button *ngIf="data.id < 0" cssClass="e-primary" 
-                  (click)="gotoEvidencija(data.employeeID, data.MM, data.YYYY)">Kreiraj
-                </button>                
-              </ng-template>
-            </e-column>
-            <!-- <e-column field='evd_podnio' headerText='evd_podnio' textAlign='Right'  textAlign='Center'  [displayAsCheckBox]="true"
+            [visible]='true'></e-column> -->
+          <e-column headerText='mje-god' width='50' textAlign='Center'>
+            <ng-template #template let-data>
+              <div class="image">
+                {{data.MM}}-{{data.YYYY}}
+              </div>
+            </ng-template>
+          </e-column>
+          <e-column headerText="kalendar" [customAttributes]='customAttributes' width=60 textAlign='Center'
+            [allowEditing]="false">
+            <ng-template #template let-data>
+              <!-- <a (click)="Click($event)" href=#>{{data.EmployeeID}}</a> -->
+              <button ejs-button *ngIf="data.id > 0" cssClass="e-info"
+                (click)="gotoKalendar(data.employeeID, data.MM, data.YYYY)">Kalendar
+              </button>
+              <button ejs-button *ngIf="data.id < 0" cssClass="e-primary"
+                (click)="gotoKalendar(data.employeeID, data.MM, data.YYYY)">Kreiraj
+              </button>
+            </ng-template>
+          </e-column>
+          <e-column field='evd_stopped' headerText='opozvan / neispravan' width='60' textAlign='Center' type='boolean'
+            [allowEditing]="true" [template]="chkboxstopped">
+            <ng-template #chkboxstopped let-data>
+              <ejs-checkbox label="" cssClass="e-success" [checked]="data.evd_stopped > 0? true : false"
+                [disabled]="(data.evd_kontrolisao > 0)&&(!data.locked_ext)? false : true"
+                (change)='changeOpoziv($event, data)'></ejs-checkbox>
+            </ng-template>
+          </e-column>
+          <e-column headerText="dnevnik" [customAttributes]='customAttributes' width=60 textAlign='Center'
+            [allowEditing]="false">
+            <ng-template #template let-data>
+              <!-- <a (click)="Click($event)" href=#>{{data.EmployeeID}}</a> -->
+              <button ejs-button *ngIf="data.id > 0" cssClass="e-info"
+                (click)="gotoEvidencija(data.employeeID, data.MM, data.YYYY)">Dnevnik
+              </button>
+              <button ejs-button *ngIf="data.id < 0" cssClass="e-primary"
+                (click)="gotoEvidencija(data.employeeID, data.MM, data.YYYY)">Kreiraj
+              </button>
+            </ng-template>
+          </e-column>
+          <!-- <e-column field='evd_podnio' headerText='evd_podnio' textAlign='Right'  textAlign='Center'  [displayAsCheckBox]="true"
              width=60 [visible]='true'></e-column>    -->
-             <e-column field='evd_podnio' headerText='podnesen' width='60' textAlign='Center' type='boolean'
-             [allowEditing]="false" [displayAsCheckBox]="true" editType= 'booleanedit' >
-              <!-- <ng-template #template let-data>
+          <e-column field='evd_podnio' headerText='podnesen' width='60' textAlign='Center' type='boolean'
+            [allowEditing]="false" [displayAsCheckBox]="true" editType='booleanedit'>
+            <!-- <ng-template #template let-data>
                   <ejs-checkbox label="" cssClass="e-success" [disabled]="true" [checked]="data.evd_podnio > 0? true : false"></ejs-checkbox>
               </ng-template> -->
-            </e-column>
-            <e-column field='evd_kontrolisao' headerText='kontrola u toku' width='60' textAlign='Center' type='boolean'
-              [allowEditing]="true" [template]="checkboxedit">
-              <ng-template #checkboxedit let-data>
-                <ejs-checkbox label="" cssClass="e-success"  [checked]="data.evd_kontrolisao > 0? true : false" [disabled]="data.locked_ext"
-                  (change)='changeKontrola($event, data)'></ejs-checkbox>
-              </ng-template>
-            </e-column>         
-            <!-- <e-column headerText="Zaključano" [customAttributes]='customAttributes' width=60  textAlign='Center'>             -->
-            <e-column field='locked_ext' headerText='zaključan' width='60' textAlign='Center' type='boolean'
-            [allowEditing]="true"  [template]="chkboxlockext">
-              <ng-template #chkboxlockext let-data>
-                  <ejs-checkbox label="" cssClass="e-success" [disabled]="(data.evd_kontrolisao > 0) && (data.evd_podnio > 0) ? false : true" (change)='changeLockedExt($event, data)' [checked]="data.locked_ext"></ejs-checkbox>
-              </ng-template>
-            </e-column>
+          </e-column>
+          <e-column field='evd_kontrolisao' headerText='kontrola u toku' width='60' textAlign='Center' type='boolean'
+            [allowEditing]="true" [template]="checkboxedit">
+            <ng-template #checkboxedit let-data>
+              <ejs-checkbox label="" cssClass="e-success" [checked]="data.evd_kontrolisao === -1 ? true : false"
+                [disabled]="data.locked_ext" (change)='changeKontrola($event, data)'></ejs-checkbox>
+            </ng-template>
+          </e-column>
+          <!-- <e-column headerText="Zaključano" [customAttributes]='customAttributes' width=60  textAlign='Center'>             -->
+          <e-column field='locked_ext' headerText='zaključan' width='60' textAlign='Center' type='boolean'
+            [allowEditing]="true" [template]="chkboxlockext">
+            <ng-template #chkboxlockext let-data>
+              <ejs-checkbox label="" cssClass="e-success"
+                [disabled]="(data.evd_kontrolisao > 0) && (data.evd_podnio > 0) ? false : true"
+                (change)='changeLockedExt($event, data)' [checked]="data.locked_ext"></ejs-checkbox>
+            </ng-template>
+          </e-column>
         </e-columns>
-      </ejs-grid>  
+      </ejs-grid>
     </div>
   </div>
 </div>

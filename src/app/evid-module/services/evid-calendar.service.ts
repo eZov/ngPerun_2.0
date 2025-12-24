@@ -11,6 +11,7 @@ import { EvidSifra } from '../../model/evid-sifra.model';
 import { EvidGodOdm } from '../../model/evid-gododm.model';
 import { AppRole } from "../../app-roles";
 import { HttpCoreService } from "../../core-services/http-core.service";
+import { EvidProcesService } from "./evid-proces.service";
 
 
 
@@ -23,41 +24,40 @@ export class EvidCalendarService {
 
     // HACK: ulazni datasource koji se prenosi u evidCalendarData
     private _evidDnevnikData: EvidDnevnik[] = new Array<EvidDnevnik>();
-
     // HACK: koristi kalendar  
     public evidCalendarData: EvidCalendar[] = new Array<EvidCalendar>();
-
     public evidCalendarWeekData: EvidCalendarWeek[] = new Array<EvidCalendarWeek>();
 
-    private SumSati = 0;
     private SumSatiObs = new Subject<number>();
 
     public _selEvid!: EvidCalendar;
     public chkSuperLock: boolean = false;
 
+
+    // PROCES EVIDENCIJA - flagovi
+    // public _evdPodnio!: boolean;
+    // public _evdLockedExt: boolean = true;
+    // public _evdStop: boolean = true;
+    // public _evdKontrolisao: boolean = false;
+    // /////////////////////////////////////////////////////////////////////////////////////
+
+    // Buttons
+    // public _sendButtonOn!: boolean;   //HACK: eCalendarService.sendButtOn odredjuje da li je button Podnesi (sendButtOn=TRUE) ili Opozovi (sendButtOn=FALSE)
+    // public _saveButtonOn!: boolean;
+    // public _disabledButton!: boolean;
+    // /////////////////////////////////////////////////////////////////////////////////////////
+
     public godOdm!: EvidGodOdm;
-
     private godOdmObs = new Subject<EvidGodOdm>();
-
-    public _evdLockedExt: boolean = true;
-    public _evdStop: boolean = true;
-    public _sendButtonOn!: boolean;   //HACK: eCalendarService.sendButtOn odredjuje da li je button Podnesi (sendButtOn=TRUE) ili Opozovi (sendButtOn=FALSE)
-    public _saveButtonOn!: boolean;
-    public _disabledButton!: boolean;
-    public _podnio!: boolean;
-
-    private _el!: EvidDnevnik;
 
     private _goYCurrIsk: number = 0;
     private _goYPrevIsk: number = 0;
 
     constructor(
         public usersession: UserSessionService,
-        private httpCoreService: HttpCoreService
-    ) {
-
-        // this.chkSuperLock = this.usersession.role === "sekretarica"? true : false;
-    }
+        private httpCoreService: HttpCoreService,
+        private evidProcesService: EvidProcesService
+    ) { }
 
     resolve(route: ActivatedRouteSnapshot): Observable<any> {
 
@@ -95,101 +95,21 @@ export class EvidCalendarService {
 
     set evidDnevnikData(value: EvidDnevnik[]) {
         this._evidDnevnikData = value;
-        this._el = this._evidDnevnikData.find(el => el.locked_ext === true || el.locked_ext === false) || {} as EvidDnevnik;
+
+        this.evidProcesService.setFlags(this._evidDnevnikData);
+
         let _dummyDataGrid: string = JSON.stringify(this.evidDnevnikData);
         this.convertToDay(_dummyDataGrid);
         this.processCalendarData();
     }
 
 
-    get sendButtOn(): boolean {
-        //HACK: eCalendarService.sendButtOn odredjuje da li je button Podnesi (sendButtOn=TRUE) ili Opozovi (sendButtOn=FALSE)
-        return this._sendButtonOn;
-    }
-
-    get saveButtOn(): boolean {
-
-        return this._saveButtonOn;
-    }
-
-    set saveButtOn(value: boolean) {
-
-        this._saveButtonOn = value;
-    }
 
     get disabledButton(): boolean {
 
-        return this._disabledButton;
+        return this.evidProcesService._disabledButton;
     }
 
-
-    public sendDisableSet() {
-        let _el: EvidDnevnik = this._evidDnevnikData.find(el => el.locked_ext === true || el.locked_ext === false) || {} as EvidDnevnik;
-        this._evdLockedExt = _el.locked_ext ?? false;
-
-        this._evdStop = (_el.evd_kontrolisao || 0) > 0 ? true : false;
-        this._podnio = (_el.evd_podnio || 0) > 0 ? true : false;
-
-        switch (this.usersession.user.role) {
-            case AppRole.Uposlenik: {
-                this._sendButtonOn = !(this._evdLockedExt || this._podnio);
-            }
-                break;
-            case AppRole.Sekretarica: {
-                //HACK: mora biti TRUE da bi PODNESI bio omogućen
-                this._sendButtonOn = !(this._evdLockedExt || this._podnio) && ((this._el.evd_kontrolisao || 0) > 0);
-            }
-                break;
-        }
-
-        this._sendButtonOn = !(this._evdLockedExt || this._podnio);
-
-    }
-
-    public sendDisable() {
-
-        switch (this.usersession.user.role) {
-            case AppRole.Uposlenik: {
-
-
-                switch (this.sendButtOn) {
-                    case true: {
-                        this._disabledButton = this.lockedExt || this.isPodnio;
-                        break;
-                    }
-
-                    case false: {
-                        this._disabledButton = this.lockedExt || this.stop || !this.isPodnio;
-                        break;
-                    }
-                }
-
-                break;
-            }
-            case 'sekretarica': {
-
-                switch (this.sendButtOn) {
-                    case true: {
-                        this._disabledButton = this.lockedExt || this.isPodnio || (this._el.evd_kontrolisao === 0);
-                        break;
-                    }
-
-                    case false: {
-                        this._disabledButton = this.lockedExt || this.stop || !this.isPodnio || (this._el.evd_kontrolisao === 0);
-                        break;
-                    }
-                }
-                break;
-            }
-            default: {
-                //statements; 
-                break;
-            }
-        }
-
-        this._saveButtonOn = false;
-
-    }
 
     convertToDay(_dummyData: string) {
 
@@ -222,6 +142,8 @@ export class EvidCalendarService {
                 let _dummyDataGrid: string = JSON.stringify(this.evidDnevnikData);
                 this.convertToDay(_dummyDataGrid);
                 this.processCalendarData();
+
+                this.evidProcesService.setFlags(this._evidDnevnikData);
                 return true;
             }),
             catchError((err) => {
@@ -371,7 +293,7 @@ export class EvidCalendarService {
             }
         }
 
-        this.sendDisableSet();
+        this.evidProcesService.sendDisableSet();
         console.log("onCheckChange 4: " + JSON.stringify(this._selEvid));
     }
 
@@ -548,13 +470,13 @@ export class EvidCalendarService {
 
     resetSati() {
 
-        this.SumSati = 0;
+        let _SumSati = 0;
         this.sfrevidprisData.forEach(el => {
             el.sati = 0;
-            this.SumSati += el.sati;
+            _SumSati += el.sati;
             return el;
         });
-        this.SumSatiObs.next(this.SumSati);
+        this.SumSatiObs.next(_SumSati);
     }
 
 
@@ -563,7 +485,7 @@ export class EvidCalendarService {
 
         let _evidDnevnik: EvidDnevnik;
 
-        if (this._selEvid != undefined && this._sendButtonOn === true) {
+        if (this._selEvid != undefined && this.evidProcesService._sendButtonOn === true) {
 
             _evidDnevnik = this._evidDnevnikData.filter(el => {
                 let _elDay = new Date(el.datum || '');
@@ -578,6 +500,8 @@ export class EvidCalendarService {
                 return;
             }
 
+            // Ukini šifru ako je već dodana (od GO-2024 uzmi samo index od GO)
+            // //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             if ((this.evidCalendarData[_day].sifra === this._selEvid.sifra) ||
                 ((this.evidCalendarData[_day].sifra?.indexOf('GO') ?? -1) >= 0 && this._selEvid.sifra === "GO")) {
                 //HACK: ukini šifru        
@@ -585,15 +509,18 @@ export class EvidCalendarService {
                 this.evidCalendarData[_day].sifra = "";
 
                 this.calcSati((this._selEvid.sifra || ''), -8);
-                _evidDnevnik.sifra_placanja = "";
+                _evidDnevnik.sifra_placanja = "";   // Ukida šifru plaćanja
                 _evidDnevnik.locked = false;
 
                 this.evidDnevnikAdd(_evidDnevnik);
             } else if (this.evidCalendarData[_day].sifra === "") {
 
-                // Dodaj šifru  
+                // Dodaj šifru ako je prazna  
+                // //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                 if (((_evidDnevnik.week_day === 5) || (_evidDnevnik.week_day === 6))) {
 
+                    // Dodaj šifru u subotu i nedjelju ali samo ako je RRD, RRK, SP, SND
+                    // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                     if ((this._selEvid.sifra === "RRD") || (this._selEvid.sifra === "RRK") || (this._selEvid.sifra === "SP") || (this._selEvid.sifra === "SND")) {
 
                         this.evidCalendarData[_day].css = this._selEvid.css + ' e-outline e-block';
@@ -602,26 +529,26 @@ export class EvidCalendarService {
                         this.calcSati(this.evidCalendarData[_day].sifra as string, 8);
 
                         // --------------------------------------------------------------------------
-                        // HACK: dodaj GO u _evidDnevnik     
+                        // HACK: dodaj RRD, RRK, SP, SND u _evidDnevnik     
                         _evidDnevnik.sifra_placanja = this._selEvid.sifra;
 
                         this.evidDnevnikAdd(_evidDnevnik);
-                    } else {
-
                     }
 
                 } else {
-
+                    // Dodaj šifru u radnim danima
+                    // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                     this.evidCalendarData[_day].css = this._selEvid.css + ' e-outline e-block';
                     this.evidCalendarData[_day].sifra = this._selEvid.sifra;
 
                     this.calcSati(this.evidCalendarData[_day].sifra || '', 8);
 
                     // --------------------------------------------------------------------------
-                    // HACK: dodaj GO u _evidDnevnik     
+                    // HACK: dodaj RRD u _evidDnevnik     
                     _evidDnevnik.sifra_placanja = this._selEvid.sifra;
 
-                    if ((this.chkSuperLock === true) && (_evidDnevnik.week_day != 5) && (_evidDnevnik.week_day != 6) && (_evidDnevnik.sifra_placanja != "RRD") && (_evidDnevnik.sifra_placanja != "RRK")) {
+                    if ((this.chkSuperLock === true) &&
+                        (_evidDnevnik.week_day != 5) && (_evidDnevnik.week_day != 6) && (_evidDnevnik.sifra_placanja != "RRD") && (_evidDnevnik.sifra_placanja != "RRK")) {
                         _evidDnevnik.locked = true;
                         this.evidCalendarData[_day].css += ' sfr-lock';
                     }
@@ -629,7 +556,7 @@ export class EvidCalendarService {
                     this.evidDnevnikAdd(_evidDnevnik);
 
                 }
-
+                // //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             }
 
             if (this.evidCalendarData[_day].sifra != "RRD") {
@@ -688,7 +615,7 @@ export class EvidCalendarService {
 
     calcSati(_sifra: string, _add: number) {
 
-        this.SumSati = 0;
+        let _SumSati = 0;
 
         this.sfrevidprisData.forEach(el => {
             if (el.sifra === "SND") return el;
@@ -696,10 +623,10 @@ export class EvidCalendarService {
             if (el.sifra === _sifra && _sifra.length > 0 && _sifra.indexOf('GO') < 0) el.sati = (el.sati || 0) + _add;
             if ((el.sifra || '').indexOf('GO') >= 0 && _sifra.indexOf('GO') >= 0) el.sati = (el.sati || 0) + _add;
 
-            this.SumSati += (el.sati || 0);
+            _SumSati += (el.sati || 0);
             return el;
         });
-        this.SumSatiObs.next(this.SumSati);
+        this.SumSatiObs.next(_SumSati);
     }
 
 
@@ -732,6 +659,7 @@ export class EvidCalendarService {
                 _evidDnevnik.vrijeme_do = " ";
             }
 
+            // Procesira GO prema godini iskorištenih dana (yprev_isk pa onda ycurr_isk)
             if ((_evidDnevnik.sifra_placanja === "GO") && ((_evidDnevnik.week_day || 0) < 5)) {
 
                 if ((this.godOdm.yprev_rjes || 0) - (this.godOdm.yprev_isk || 0) > 0) {
@@ -785,7 +713,7 @@ export class EvidCalendarService {
 
     private setGoStatus() {
 
-        if (this._podnio === false) {
+        if (this.evidProcesService._evdPodnio === false) {
             // Poredaj prevGO i curGO po datumima
             this.godOdm.ycurr_isk = this._goYCurrIsk;
             this.godOdm.yprev_isk = this._goYPrevIsk;
@@ -817,30 +745,12 @@ export class EvidCalendarService {
 
     }
 
-    get isPodnio(): boolean {
+    // get isPodnio(): boolean {
+    //     return this.evidProcesService._evdPodnio;
+    // }
 
-        //let _el: EvidDnevnik = this._evidDnevnikData.find(el => el.locked_ext === true || el.locked_ext === false);
-        let _podnio: boolean = false;
-        if (this._el.evd_podnio != undefined) {
-            _podnio = this._el.evd_podnio > 0 ? true : false;
-        }
+    // get lockedExt(): boolean {
+    //     return this.evidProcesService._evdLockedExt;
+    // }
 
-        return _podnio;
-    }
-
-    get lockedExt(): boolean {
-
-        let _lockedExt: boolean = this._el.locked_ext ?? false;
-        return _lockedExt;
-    }
-
-    get stop(): boolean {
-
-        let _evdStop: boolean = false;
-        if (this._el.evd_kontrolisao != undefined) {
-            _evdStop = this._el.evd_kontrolisao > 0 ? true : false;
-        }
-
-        return _evdStop;
-    }
 }

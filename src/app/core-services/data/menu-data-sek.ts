@@ -42,5 +42,6 @@ export const menuDataSek: { [key: string]: Object | null }[] = [
         // { id: 'izv_putninalog', text: 'Putnih naloga', iconCss: 'em-icons-mod e-izvjestaj', parentId: 'izvjestaj' },
         // { id: 'izv_putninalogupo', text: 'Putnih naloga po uposleniku', iconCss: 'em-icons-mod e-izvjestaj', parentId: 'izvjestaj' }
         { id: 'evidencije', text: 'Evidencije rada i odsustva', iconCss: 'em-icons-mod e-priprema', parentId: null },
-        { id: 'evid_kontrola', text: 'Kontrola dnevnika', iconCss: 'em-icons e-file', parentId: 'evidencije' }                        
+        { id: 'evid_kontrola', text: 'Kontrola evidencija', iconCss: 'em-icons e-file', parentId: 'evidencije' },
+        { id: 'evid_notification', text: 'Obavještavanje', iconCss: 'em-icons e-file', parentId: 'evidencije' }         
     ];    

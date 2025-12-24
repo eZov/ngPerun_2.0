@@ -11,9 +11,10 @@ import { CookieService } from 'ngx-cookie-service';
 import { MenuService } from '../../../core-services/menu.service';
 
 import { User } from '../../user.model';
-import { Observable, of } from 'rxjs';
+import { Observable, of, Subscription } from 'rxjs';
 import { ToastUtility, ToastComponent, ToastModel } from '@syncfusion/ej2-angular-notifications';
 import { ToastService } from '../../../toasts/toast.service';
+import { NotificationService } from '../../../core-services/notification.service';
 
 
 
@@ -26,6 +27,7 @@ import { ToastService } from '../../../toasts/toast.service';
   styleUrls: ['./login.component.css']
 })
 export class LoginComponent implements OnInit {
+  private subs: Subscription[] = [];
 
   public toastObj?: ToastComponent;
 
@@ -36,7 +38,6 @@ export class LoginComponent implements OnInit {
 
   @ViewChild("toast") toast!: ElementRef;
 
-  private _user: User = new User();
 
   public username!: string;
   public password!: string;
@@ -72,8 +73,8 @@ export class LoginComponent implements OnInit {
     private auth: AuthService,
     public userSessionService: UserSessionService,
     private menuService: MenuService,
-    // private pnStatus: PutnalWorkflowService   
-    private toastService: ToastService
+    private toastService: ToastService,
+    private notificationService: NotificationService
   ) {
 
     this.cardHtml = activeRoute.snapshot.params["mode"];
@@ -88,22 +89,25 @@ export class LoginComponent implements OnInit {
     this.email = '';
     this.loggedIn = false;
 
-    this.loaderService.status.subscribe((val: boolean) => {
+    const sub1 = this.loaderService.status.subscribe((val: boolean) => {
       this.showLoader = val;
     });
+    this.subs.push(sub1);
 
-    this.userSessionService.getLoggedIn().subscribe(loggedIn => {
+    const sub2 = this.userSessionService.getLoggedIn().subscribe(loggedIn => {
       this.loggedIn = loggedIn;
       console.log("login loggedIn: " + loggedIn);
     })
+    this.subs.push(sub2);
 
-    this.userSessionService.getUser().subscribe(user => {
+    const sub3 = this.userSessionService.getUser().subscribe(user => {
       this.role = user.role;
       this.email = user.email;
       this.userRoles = JSON.parse(JSON.stringify(user.UserRoles));
       this.currentRole = user.role;
       console.log("login getUser: " + JSON.stringify(user));
     })
+    this.subs.push(sub3);
 
     this.loaderService.display(false);
   }
@@ -121,28 +125,22 @@ export class LoginComponent implements OnInit {
 
             this.menuService.setMenuLoggedIn();
             this.router.navigateByUrl("/");
-            this.toastService.reportToast({
-              title: 'Uspješna prijava',
-              content: 'Uspješno ste se prijavili na sistem',
-              cssClass: 'e-toast-success',
-              icon: 'e-success toast-icons',
-              timeOut: 1000
+            this.toastService.reportSuccessToast({
+              title: 'PRIJAVA',
+              content: 'Uspješno ste se prijavili na sistem'
             });
 
+            this.notificationService.getNotification(999);
           }
           this.loaderService.display(false);
-          console.log('---> login unsuccessful!!! ');
         },
         error: error => {
           console.error('Error:', error)
           this.loaderService.display(false);
 
-          this.toastService.reportToast({
+          this.toastService.reportErrorToast({
             title: 'Greška tokom prijave',
-            content: 'Došlo je do greške tokom prijave: provjerite da li imate prava pristupa i da li su validni vaši podaci za prijavu (korisničko ime i lozinka)',
-            cssClass: 'e-toast-danger',
-            icon: 'e-error toast-icons',
-            timeOut: 3000
+            content: 'Došlo je do greške tokom prijave: provjerite da li imate prava pristupa i da li su validni vaši podaci za prijavu (korisničko ime i lozinka)'
           });
 
         },
@@ -191,26 +189,20 @@ export class LoginComponent implements OnInit {
         next: (value: boolean) => {
           if (value) {
             console.log("login changePassword 1: " + JSON.stringify(value));
-            this.toastService.reportToast({
+            this.toastService.reportSuccessToast({
               title: 'Uspješna promjena lozinke',
-              content: 'Uspješno ste promjenili lozinku. Sad ćete biti odjavljeni iz sistema, te se morate ponovo prijaviti sa novom lozinkom.',
-              cssClass: 'e-toast-success',
-              icon: 'e-success toast-icons',
-              timeOut: 3000
+              content: 'Uspješno ste promjenili lozinku. Sad ćete biti odjavljeni iz sistema, te se morate ponovo prijaviti sa novom lozinkom.'
             });
 
             this.auth.logout();
-            this.menuService.setMenuLoggedIn();        
-             this.router.navigateByUrl("/");  
+            this.menuService.setMenuLoggedIn();
+            this.router.navigateByUrl("/");
           } else {
-            
+
             console.log("login changePassword 2: " + JSON.stringify(value));
-            this.toastService.reportToast({
+            this.toastService.reportErrorToast({
               title: 'Greška tokom promjene lozinke',
-              content: 'Došlo je do greške tokom promjene lozinke: provjerite da li su validni vaši podaci za promjenu lozinke (stara i nova lozinka)',
-              cssClass: 'e-toast-danger',
-              icon: 'e-error toast-icons',
-              timeOut: 3000
+              content: 'Došlo je do greške tokom promjene lozinke: provjerite da li su validni vaši podaci za promjenu lozinke (stara i nova lozinka)'
             });
           }
         },
@@ -223,5 +215,10 @@ export class LoginComponent implements OnInit {
   //HACK: postavlja se parametar za UserSession
   changeSetPerRole() {
     this.userSessionService.changeSetPerRole();
+  }
+
+  ngOnDestroy() {
+    this.subs.forEach((s) => s.unsubscribe());
+    console.log('login-ngOnDestroy...');
   }
 }

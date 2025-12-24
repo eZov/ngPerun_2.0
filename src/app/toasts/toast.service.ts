@@ -10,12 +10,43 @@ export class ToastService {
     public toastInstance!: Toast;
     constructor() { }
 
-      toasts: Observable<ToastApp> = new ReplaySubject<ToastApp>(1);
-    
-      reportToast(tst: ToastApp | undefined) {
-          (this.toasts as Subject<ToastApp | undefined>).next(tst);
-      }  
-      
+    toasts: Observable<ToastApp> = new ReplaySubject<ToastApp>(1);
+
+    reportToast(tst: ToastApp | undefined) {
+        (this.toasts as Subject<ToastApp | undefined>).next(tst);
+    }
+
+    reportSuccessToast(tst: ToastApp | undefined) {
+        if (tst) {
+            tst.cssClass = 'e-toast-success';
+            tst.icon = 'e-success toast-icons';
+            tst.timeOut = 3000;
+            tst.showCloseButton = false;
+            tst.showButtons = false;
+        }
+        (this.toasts as Subject<ToastApp | undefined>).next(tst);
+    }
+
+    reportErrorToast(tst: ToastApp | undefined) {
+        if (tst) {
+            tst.cssClass = 'e-toast-danger';
+            tst.icon = 'e-error toast-icons';
+            tst.timeOut = 3000;
+            tst.showCloseButton = false;
+            tst.showButtons = false;
+        }
+        (this.toasts as Subject<ToastApp | undefined>).next(tst);
+    }
+
+    reportButtonToast(tst: ToastApp | undefined) {
+        if (tst) {
+            tst.timeOut = 0;
+            tst.showCloseButton = false;   
+            tst.showButtons = true;     
+        }
+        (this.toasts as Subject<ToastApp | undefined>).next(tst);
+    }
+
     // To create the toast component
     createToast: Function = (element: HTMLElement, model: ToastModel): Toast => {
         if (!element.classList.contains('e-toast')) {

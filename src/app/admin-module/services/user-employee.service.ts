@@ -34,9 +34,7 @@ export class UserEmployeeService implements Resolve<any> {
         )
     }
 
-    listUserEmployeeBySifra(
-        _sifra: string
-    ): Observable<AdmEmployee[]> {
+    listUserEmployeeBySifra(_sifra: string): Observable<AdmEmployee[]> {
 
         let _sptype: string = "GetUserEmployeeList";
         return this.httpCoreService.getData<AdmEmployee[]>(`${this.httpCoreService.baseUrl}${_sptype}?org=${_sifra}`).pipe(

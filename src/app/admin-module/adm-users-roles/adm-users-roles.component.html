@@ -1,0 +1,79 @@
+<div class="container-fluid peruncontainer">
+  <div class="loading-indicator" *ngIf="showLoader">
+    <mat-spinner></mat-spinner>
+  </div>
+
+
+  <div class="title">Pristup portalu - role</div>
+  <div class="sub-title"> </div>
+  <div class="row  bg-light bg-gradient text-white">
+    <div class="col-sm-10">
+    </div>
+    <div class="mt-2 col-sm-2 d-grid gap-2">
+      <button class="btn btn-primary m-1 btn-sm" (click)="dodaj()">Spasi</button>
+    </div>
+  </div>
+  <div class="row">
+    <hr>
+  </div>
+  <ejs-splitter #horizontal height='100%' width='100%'>
+    <e-panes>
+      <e-pane size='25%' [collapsible]='true'>
+        <ng-template #content>
+          <ejs-treeview #treevalidate id='treeroot' [fields]='field' [showCheckBox]='showCheckBox'
+            [autoCheck]='autoCheck' (created)='onCreated($event)' (nodeClicked)='onNodeClicked($event)'
+            (nodeSelected)='onNodeSelected($event)' (dataBound)='onDataBound($event)'>
+          </ejs-treeview>
+        </ng-template>
+      </e-pane>
+      <e-pane size='70%' [collapsible]='false'>
+        <ng-template #content>
+          <div class="row w-100 align-items-center">
+            <div class="col-sm-12">
+              <ejs-grid #grid [editSettings]='editSettings' [toolbar]='toolbar' [allowPaging]="true"
+                [allowSorting]="true" [allowFiltering]="false" [allowGrouping]="false" [pageSettings]='pageSettings'
+                [showColumnChooser]='true' [allowResizing]='true' (beforeBatchSave)="beforeBatchSave($event)">
+                <e-columns>
+                  <e-column field='EmployeeID' headerText='EmployeeID' textAlign='Right' isPrimaryKey='true' width=60>
+                  </e-column>
+                  <e-column field="customColumn" headerText="Uposlenik">
+                    <ng-template #template let-data>
+                      {{ data.FirstName }} {{ data.LastName }} ({{ data.Email }})
+                    </ng-template>
+                  </e-column>
+                  <e-column field='FirstName' headerText='Ime' [visible]='false' [allowEditing]="false"
+                    textAlign='Right' width=60></e-column>
+                  <e-column field='LastName' headerText='Prezime' [visible]='false' [allowEditing]="false"
+                    width=80></e-column>
+                  <e-column field='Email' headerText='Korisničko ime' [visible]='false' [allowEditing]="false"
+                    textAlign='Right' width=80>
+                  </e-column>
+                  <e-column field='EmailDef' headerText='Def' [visible]='false' [allowEditing]="false" textAlign='Right'
+                    width=20></e-column>
+                  <e-column field='OrgJedNaziv' headerText='Naziv org.jed.' [visible]='false' [allowEditing]="false"
+                    textAlign='Left'></e-column>
+                  <e-column field='OrgJedNaziv2' headerText='Sektor' [visible]='false' [allowEditing]="false"
+                    textAlign='Right' width=120></e-column>
+                  <e-column field='OrgJedSifra' headerText='OrgJedSifra' [visible]='false' [allowEditing]="false"
+                    textAlign='Right' width=50></e-column>
+                  <e-column field='roles' headerText='Role' [visible]='true' [allowEditing]="false"
+                    textAlign='Right' width=200></e-column>                    
+                </e-columns>
+                <ng-template #detailTemplate let-data>
+                  <ejs-multiselect #multiselectlist id='multiselectlist' [mode]='box' [fields]='fields'
+                    [placeholder]='waterMark' (created)="onCreatedRoles(data.EmployeeID)" 
+                    (dataBound)="onDataBoundRoles(data.roles)"></ejs-multiselect>
+                </ng-template>
+              </ejs-grid>
+            </div>
+          </div>
+        </ng-template>
+      </e-pane>
+    </e-panes>
+  </ejs-splitter>
+
+
+
+
+
+</div>

@@ -5,8 +5,8 @@ import { JwtHelperService } from '@auth0/angular-jwt';
 import { HttpCoreService } from './http-core.service';
 import { UserSessionService } from './user-session.service';
 import { AppJwtService } from './app-jwt.service';
-import { AppService } from './app.service';
 import { TokenService } from './token.service';
+import { User } from "../core-module/user.model";
 
 const jwtHelper = new JwtHelperService();
 
@@ -114,14 +114,15 @@ export class AuthService {
   logout(): boolean {
 
     this.tokenService.setToken('');
+    this.userSessionService.setLoggedIn(false)
+
+    const logoutUser = new User();
+    this.userSessionService.setUser(logoutUser);
     this.userSessionService.setLoggedIn(false);
     this.userSessionService.user.role = '';
 
-    if (this.tokenService.getToken() == '') {
-      return true;
-    } else {
-      return false;
-    }
+
+    return this.tokenService.getToken() == ''? true : false;
   }
 
   public isAuthenticated(): boolean {

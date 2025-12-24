@@ -1,0 +1,84 @@
+<div class="container-fluid peruncontainer">
+  <div class="loading-indicator" *ngIf="showLoader">
+    <mat-spinner></mat-spinner>
+  </div>
+  <div class="row  w-100 align-items-center">
+    <div class="col-sm-8">
+    </div>
+    <div class="col-sm-4">
+    </div>
+  </div>
+  <div class="row w-100 align-items-center bg-light mt-1 mb-1 p-3   border border-1 border-primary">
+    <div class="col-sm-6">
+      <p class="h5 text-uppercase">{{compTitle}}</p>
+    </div>
+  </div>
+  <div class="row w-100 align-items-center bg-light p-3">
+    <div class="col-sm-12 bg-light">
+      <div class="card-group">
+        <div class="card">
+          <div class="card-header">
+            Prethodno poslana poruka
+          </div>
+          <div class="card-body">
+            <h5 class="card-title">Prethodno poslana poruka</h5>
+            <p class="card-text">{{notifContent}}</p>
+            <!-- <button type="button" class="btn btn-primary">Obriši</button> -->
+            <div class="e-card-actions">
+              <!-- <button ejs-button cssClass="e-primary" (click)="delNotifContent()">Obriši</button> -->
+              <button type="button" class="btn btn-danger" (click)="delNotifContent()">Obriši</button>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            Lista korisnika koji nisu pročitali poruku
+          </div>
+          <div class="card-body">
+            <h5 class="card-title">Lista korisnika kojima je poslana poruka</h5>
+            <p class="card-text"><ejs-grid #grid>
+                <e-columns>
+                  <e-column field='Id' headerText='Id' textAlign='Left' [visible]='false'></e-column>
+                  <e-column field='SenderId' headerText='SenderId' [visible]='false'></e-column>
+                  <e-column field='ReceiverId' headerText='ReceiverId' textAlign='Left' [visible]='false'></e-column>
+                  <e-column field='ReceiverName' headerText='Korisnik' textAlign='Left'></e-column>
+                  <e-column field='Content' headerText='Content' [visible]='false'></e-column>
+                  <e-column field='ContentId' headerText='ContentId' [visible]='false' textAlign='Left'></e-column>
+                  <e-column field='IsRead' headerText='Pročitano' type='boolean' [displayAsCheckBox]="true"></e-column>
+                </e-columns>
+              </ejs-grid></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row w-100 align-items-center bg-light p-3">
+    <div class="col-sm-12 bg-light">
+      <div class="card">
+        <div class="card-header">
+          Unos nove poruke
+        </div>
+        <div class="card-body">
+          <h5 class="card-title">Unos nove poruke</h5>
+          <p class="card-text">{{evidText.Notification1}}</p>
+          <div class='textarea border border-1 border-light  mt-1 mb-1 p-1 '>
+            <ejs-textbox id="default" [multiline]='true' [(value)]='txtPoruka' showClearButton="true" cssClass="e-bigger e-corner"></ejs-textbox>
+          </div>
+          <div>
+            <button type="button" class="btn btn-primary" (click)="sendNotifContent()">Pošalji</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row w-100 align-items-center bg-light p-3">
+
+  </div>
+  <div class="row w-100 align-items-center bg-light">
+    <div class="col-sm-6 bg-light">
+    </div>
+    <div class="col-sm-6 text-right">
+    </div>
+  </div>
+
+</div>

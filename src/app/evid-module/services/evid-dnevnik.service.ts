@@ -11,6 +11,9 @@ import { EvidGodOdm } from "../../model/evid-gododm.model";
 import { EvidSifra } from "../../model/evid-sifra.model";
 import { HttpCoreService } from "../../core-services/http-core.service";
 import { LoaderService } from "../../core-services/loader.service";
+import { AppRole } from "../../app-roles";
+import { EvidProcesService } from "./evid-proces.service";
+import { EvidText } from '../evid-text';
 
 export interface BtnStatus {
   poslana: boolean; //HACK: false = priprema, true = poslana
@@ -35,47 +38,50 @@ export class EvidDnevnikService {
   private _eDnevnikDataSubj = new Subject<EvidDnevnik[]>();
 
   public _evidPrisSifra: EvidSifra[] = new Array<EvidSifra>();
-
   public maxNumRowsPerDay: number = 5;
 
-  public godOdm!: EvidGodOdm;
-
-  private godOdmObs = new Subject<EvidGodOdm>();
-  private btnPodnesiObs = new Subject<BtnPodnesi>();
   private evidPrisSifraObs = new Subject<EvidSifra[]>();
 
-  public _evdLockedExt: boolean = true;
-  public _evdStop: boolean = true;
-  public _sendButtOn!: boolean;
+
+  // PROCES EVIDENCIJA - flagovi
+  // public _evdPodnio!: boolean;
+  // public _evdLockedExt: boolean = true;
+  // public _evdStop: boolean = true;
+  // public _evdKontrolisao: boolean = false;
+
+  public _evidPodnesen: boolean = false;
+  // /////////////////////////////////////////////////////////////////////////////////////
+
+  // Buttons
+  //private btnPodnesiObs = new Subject<BtnPodnesi>();
+
+  public _sendButtonOn!: boolean;   //HACK: eCalendarService.sendButtOn odredjuje da li je button Podnesi (sendButtOn=TRUE) ili Opozovi (sendButtOn=FALSE)
   public _saveButtonOn!: boolean;
   public _disabledButton!: boolean;
-  public _podnio!: boolean;
-  private _el!: EvidDnevnik;          // koristi se za sendDisableSet
+  // /////////////////////////////////////////////////////////////////////////////////////////
+
+  // GO - Godišnji Odmor
+  public godOdm!: EvidGodOdm;
+  private godOdmObs = new Subject<EvidGodOdm>();
 
   private _goYCurrIsk: number = 0;
   private _goYPrevIsk: number = 0;
-  public _evidPodnesen: boolean = false;
+  // ///////////////////////////////////////////////////////////////////////////////////////
 
   constructor(
     public restDataSource: RestDataSource,
     public usersession: UserSessionService,
     private loaderService: LoaderService,
-    private httpCoreService: HttpCoreService
+    private httpCoreService: HttpCoreService,
+    private evidProcesService: EvidProcesService
   ) { }
 
   resolve(route: ActivatedRouteSnapshot): Observable<any> {
     let _dt = this.usersession.firstDate;
 
-    let _empid =
-      route.params["empid"] != undefined
-        ? route.params["empid"]
-        : this.usersession.user.empId;
-    let _MM: number =
-      route.params["mm"] != undefined ? route.params["mm"] : _dt.getMonth() + 1;
-    let _YYYY: number =
-      route.params["yyyy"] != undefined
-        ? route.params["yyyy"]
-        : _dt.getFullYear();
+    let _empid = route.params["empid"] != undefined ? route.params["empid"] : this.usersession.user.empId;
+    let _MM: number = route.params["mm"] != undefined ? route.params["mm"] : _dt.getMonth() + 1;
+    let _YYYY: number = route.params["yyyy"] != undefined ? route.params["yyyy"] : _dt.getFullYear();
 
     console.log("EvidDnevnikService: " + _empid + "-" + _MM + "-" + _YYYY);
 
@@ -102,9 +108,9 @@ export class EvidDnevnikService {
     console.log(
       "DnevnikService GetTtile: " + JSON.stringify(this.usersession.user)
     );
-    let _title: string = _workStation === 0 ? "Dnevnik rada i odsustva " : "Evidencije ( Plan / Realizacija ) ";
+    let _title: string = _workStation === 0 ? EvidText.DnevnikTitle : EvidText.DnevnikTitle2;
 
-    return this.usersession.user.role === "uposlenik" ? _title : "Kontrola dnevnika rada i odsustva za: ";
+    return this.usersession.user.role === "uposlenik" ? _title : EvidText.DnevnikTitle3;
   }
 
   /* evidDnevnikData (GRID) - START  */
@@ -118,7 +124,7 @@ export class EvidDnevnikService {
     let _dummyDataGrid: string = JSON.stringify(this._eDnevnikData);
     this.convertToDay(_dummyDataGrid);              //HACK: konvertuje string u DateTime object
 
-    this._elInit();                                                           //HACK: inicijalizuje _el
+    this.evidProcesService.setFlags(this._eDnevnikData);                                                         //HACK: inicijalizuje _el
     this._eDnevnikDataClone = JSON.parse(JSON.stringify(this._eDnevnikData)); //HACK: klon podataka, koristi se za GO
 
     this._eDnevnikDataSubj.next(this.processEvidDnevnikExtData(this._eDnevnikData)); //HACK: emit podaci
@@ -132,13 +138,9 @@ export class EvidDnevnikService {
     this._eDnevnikData = value;
     let _dummyDataGrid: string = JSON.stringify(this._eDnevnikData);
     //HACK: konvertuje string u DateTime object
-    this.convertToDay(_dummyDataGrid);
+    this.convertToDay(_dummyDataGrid); //rezulttat se smješta u this._eDnevnikData
 
-    // this._el = this._eDnevnikData.find(
-    //   (el) => el.locked_ext === true || el.locked_ext === false
-    // ) || new EvidDnevnik();
-    this._elInit();
-
+    this.evidProcesService.setFlags(this._eDnevnikData);
     this._eDnevnikDataClone = JSON.parse(JSON.stringify(this._eDnevnikData));
   }
 
@@ -157,7 +159,8 @@ export class EvidDnevnikService {
         let _dummyDataGrid: string = JSON.stringify(this._eDnevnikData);
         this.convertToDay(_dummyDataGrid);              //HACK: konvertuje string u DateTime object
 
-        this._elInit();                                                           //HACK: inicijalizuje _el
+
+        this.evidProcesService.setFlags(this._eDnevnikData);                      //HACK: inicijalizuje _el
         this._eDnevnikDataClone = JSON.parse(JSON.stringify(this._eDnevnikData)); //HACK: klon podataka, koristi se za GO
 
         this._eDnevnikDataSubj.next(this.processEvidDnevnikExtData(this._eDnevnikData)); //HACK: emit podaci
@@ -180,11 +183,20 @@ export class EvidDnevnikService {
 
     this.httpCoreService.getData<EvidDnevnik[]>(`${this.httpCoreService.baseUrl}${_sptype}?vrsta=list&EmployeeID=${_empID}&mm=${_MM}&yyyy=${_YYYY}&prepare=false`).subscribe({
       next: (value: EvidDnevnik[]) => {
-        this.evidDnevnikDataObs = value;
+        this.processEvidDnevnikData(value); //HACK: emit podaci
+        // this._eDnevnikData = value;
+        // let _dummyDataGrid: string = JSON.stringify(this._eDnevnikData);
+        // this.convertToDay(_dummyDataGrid);              //HACK: konvertuje string u DateTime object //rezulttat se smješta u this._eDnevnikData
 
-        this.sendDisableSet();
+        // this.evidProcesService.setFlags(this._eDnevnikData);
+        // this._eDnevnikDataClone = JSON.parse(JSON.stringify(this._eDnevnikData)); //HACK: klon podataka, koristi se za GO
+
+  
+
+        // this._eDnevnikDataSubj.next(this.processEvidDnevnikExtData(this._eDnevnikData)); //HACK: emit podaci
+
         this.getGoStatus(_empID, _ddlY);
-
+        // this.evidProcesService.setFlags(this._eDnevnikData);
         this.loaderService.display(false);
       },
       error: (err) => {
@@ -196,6 +208,50 @@ export class EvidDnevnikService {
 
   }
 
+  sendEvidDnevnikData(
+    _empID: number,
+    _MM: number,
+    _YYYY: number,
+    _value: boolean
+  ): Observable<boolean> {
+
+    let _sptype: string = "eviddnevnik";
+    let _valStr: string = _value ? "send" : "unsend";
+
+    return this.httpCoreService.getData<EvidDnevnik[]>(`${this.httpCoreService.baseUrl}${_sptype}?vrsta=${_valStr}&EmployeeID=${_empID}&mm=${_MM}&yyyy=${_YYYY}`).pipe(
+      map((value: EvidDnevnik[]) => {
+        // this._eDnevnikData = value;
+        // let _dummyDataGrid: string = JSON.stringify(this._eDnevnikData);
+        // this.convertToDay(_dummyDataGrid);              //HACK: konvertuje string u DateTime object
+
+
+        // this.evidProcesService.setFlags(this._eDnevnikData);                      //HACK: inicijalizuje _el
+        // this._eDnevnikDataClone = JSON.parse(JSON.stringify(this._eDnevnikData)); //HACK: klon podataka, koristi se za GO
+
+        // this._eDnevnikDataSubj.next(this.processEvidDnevnikExtData(this._eDnevnikData)); //HACK: emit podaci
+
+        this.processEvidDnevnikData(value); //HACK: emit podaci
+        return true;
+      }),
+      catchError((err) => {
+        console.error('Error loading calendar data', err);
+        return of(false);
+      })
+    );
+  }
+
+
+  private processEvidDnevnikData(value: EvidDnevnik[]): void {
+    this._eDnevnikData = value;
+    let _dummyDataGrid: string = JSON.stringify(this._eDnevnikData);
+    this.convertToDay(_dummyDataGrid);              //HACK: konvertuje string u DateTime object
+
+
+    this.evidProcesService.setFlags(this._eDnevnikData);                      //HACK: inicijalizuje _el
+    this._eDnevnikDataClone = JSON.parse(JSON.stringify(this._eDnevnikData)); //HACK: klon podataka, koristi se za GO
+
+    this._eDnevnikDataSubj.next(this.processEvidDnevnikExtData(this._eDnevnikData)); //HACK: emit podaci
+  }
   /* evidDnevnikData (GRID) - END  */
 
 
@@ -258,112 +314,103 @@ export class EvidDnevnikService {
     this._goYPrevIsk = 0;
   }
 
-  private _elInit() {
-    this._el = this._eDnevnikData.find(
-      (el) => el.locked_ext === true || el.locked_ext === false
-    ) || new EvidDnevnik();
-  }
 
-  public sendDisableSet() {
-    //let _el: EvidDnevnik = this._evidDnevnikData.find(el => el.locked_ext === true || el.locked_ext === false);
-    let _el: EvidDnevnik = this._el;
+  // public sendDisableSet() {
 
-    this._evdLockedExt = _el.locked_ext || false;
-    this._evdStop = _el.evd_kontrolisao || 0 > 0 ? true : false;
-    this._podnio = _el.evd_podnio || 0 > 0 ? true : false;
-    this._sendButtOn = !(this._evdLockedExt || this._podnio);
+  //   console.log(`evid-dnevnik.service sendDisableSet: ... `);
+  //   this.evidProcesService.setFlags(this._eDnevnikData);
 
-    let _btnPodnesi: BtnPodnesi = {
-      id: 0,
-      content: "Podnesi",
-      cssClass: "btn-block e-primary",
-      iconCss: "e-btn-sb-icon sf-icon-mail-all-wf",
-      enabled: true,
-    };
+  //   let _btnPodnesi: BtnPodnesi = {
+  //     id: 0,
+  //     content: "Podnesi",
+  //     cssClass: "btn-block e-primary",
+  //     iconCss: "e-btn-sb-icon sf-icon-mail-all-wf",
+  //     enabled: true,
+  //   };
 
-    let _btnOpozovi: BtnPodnesi = {
-      id: 0,
-      content: "Opozovi",
-      cssClass: "btn-block e-danger",
-      iconCss: "e-btn-sb-icon sf-icon-mail-delete-wf",
-      enabled: true,
-    };
+  //   let _btnOpozovi: BtnPodnesi = {
+  //     id: 0,
+  //     content: "Opozovi",
+  //     cssClass: "btn-block e-danger",
+  //     iconCss: "e-btn-sb-icon sf-icon-mail-delete-wf",
+  //     enabled: true,
+  //   };
 
-    switch (this.usersession.user.role) {
-      case "uposlenik": {
-        if (_el.locked_ext == false && _el.evd_podnio == 0) {
-          _btnPodnesi.enabled = true;
-          this.setBtnPodnesi(_btnPodnesi); // status = 1
-          this._evidPodnesen = false;
-        } else if (
-          _el.locked_ext == false &&
-          _el.evd_podnio || 0 > 0 &&
-          _el.evd_kontrolisao == 0
-        ) {
-          _btnOpozovi.enabled = true;
-          this.setBtnPodnesi(_btnOpozovi); // status = 2
-          this._evidPodnesen = true;
-        } else if (_el.locked_ext == true) {
-          _btnOpozovi.enabled = false;
-          this.setBtnPodnesi(_btnOpozovi); // status = 3
-          this._evidPodnesen = true;
-        } else if (
-          _el.locked_ext == false &&
-          _el.evd_podnio || 0 > 0 &&
-          _el.evd_kontrolisao || 0 > 0
-        ) {
-          _btnOpozovi.enabled = false;
-          this.setBtnPodnesi(_btnOpozovi); // status = 3
-          this._evidPodnesen = true;
-        }
-        break;
-      }
-      case "sekretarica": {
-        if (
-          _el.locked_ext == false &&
-          _el.evd_kontrolisao == 0 &&
-          _el.evd_podnio == 0
-        ) {
-          _btnPodnesi.enabled = false;
-          this.setBtnPodnesi(_btnPodnesi); // status = 1
-          this._evidPodnesen = false;
-        } else if (
-          _el.locked_ext == false &&
-          _el.evd_kontrolisao == 0 &&
-          _el.evd_podnio || 0 > 0
-        ) {
-          _btnOpozovi.enabled = false;
-          this.setBtnPodnesi(_btnOpozovi); // status = 2
-          this._evidPodnesen = true;
-        } else if (
-          _el.locked_ext == false &&
-          _el.evd_kontrolisao || 0 > 0 &&
-          _el.evd_podnio == 0
-        ) {
-          _btnPodnesi.enabled = true;
-          this.setBtnPodnesi(_btnPodnesi); // status = 1
-          this._evidPodnesen = false;
-        } else if (
-          _el.locked_ext == false &&
-          _el.evd_kontrolisao || 0 > 0 &&
-          _el.evd_podnio || 0 > 0
-        ) {
-          _btnOpozovi.enabled = true;
-          this.setBtnPodnesi(_btnOpozovi); // status = 3
-          this._evidPodnesen = true;
-        } else if (_el.locked_ext == true && _el.evd_podnio || 0 > 0) {
-          _btnOpozovi.enabled = false;
-          this.setBtnPodnesi(_btnOpozovi); // status = 3
-          this._evidPodnesen = true;
-        } else if (_el.locked_ext == true && _el.evd_podnio == 0) {
-          _btnPodnesi.enabled = false;
-          this.setBtnPodnesi(_btnPodnesi); // status = 1
-          this._evidPodnesen = false;
-        }
-        break;
-      }
-    }
-  }
+  //   switch (this.usersession.user.role) {
+  //     case AppRole.Uposlenik: {
+  //       if (this.evidProcesService._evdLockedExt == false && this.evidProcesService._evdPodnio == false) {
+  //         _btnPodnesi.enabled = true;
+  //         this.setBtnPodnesi(_btnPodnesi); // status = 1
+  //         this.evidProcesService._evidPodnesen = false;
+  //       } else if (
+  //         this.evidProcesService._evdLockedExt &&
+  //         this.evidProcesService._evdPodnio === true &&
+  //         this.evidProcesService._evdKontrolisao == false
+  //       ) {
+  //         _btnOpozovi.enabled = true;
+  //         this.setBtnPodnesi(_btnOpozovi); // status = 2
+  //         this.evidProcesService._evidPodnesen = true;
+  //       } else if (this.evidProcesService._evdLockedExt == true) {
+  //         _btnOpozovi.enabled = false;
+  //         this.setBtnPodnesi(_btnOpozovi); // status = 3
+  //         this.evidProcesService._evidPodnesen = true;
+  //       } else if (
+  //         this.evidProcesService._evdLockedExt == false &&
+  //         this.evidProcesService._evdPodnio === true &&
+  //         this.evidProcesService._evdKontrolisao == true
+  //       ) {
+  //         _btnOpozovi.enabled = false;
+  //         this.setBtnPodnesi(_btnOpozovi); // status = 3
+  //         this.evidProcesService._evidPodnesen = true;
+  //       }
+  //       break;
+  //     }
+  //     case AppRole.Sekretarica: {
+  //       if (
+  //         this.evidProcesService._evdLockedExt == false &&
+  //         this.evidProcesService._evdKontrolisao == false &&
+  //         this.evidProcesService._evdPodnio === false
+  //       ) {
+  //         _btnPodnesi.enabled = false;
+  //         this.setBtnPodnesi(_btnPodnesi); // status = 1
+  //         this.evidProcesService._evidPodnesen = false;
+  //       } else if (
+  //         this.evidProcesService._evdLockedExt == false &&
+  //         this.evidProcesService._evdKontrolisao == false &&
+  //         this.evidProcesService._evdPodnio === true
+  //       ) {
+  //         _btnOpozovi.enabled = false;
+  //         this.setBtnPodnesi(_btnOpozovi); // status = 2
+  //         this.evidProcesService._evidPodnesen = true;
+  //       } else if (
+  //         this.evidProcesService._evdLockedExt == false &&
+  //         this.evidProcesService._evdKontrolisao == true &&
+  //         this.evidProcesService._evdPodnio === false
+  //       ) {
+  //         _btnPodnesi.enabled = true;
+  //         this.setBtnPodnesi(_btnPodnesi); // status = 1
+  //         this.evidProcesService._evidPodnesen = false;
+  //       } else if (
+  //         this.evidProcesService._evdLockedExt == false &&
+  //         this.evidProcesService._evdKontrolisao == true &&
+  //         this.evidProcesService._evdPodnio === true
+  //       ) {
+  //         _btnOpozovi.enabled = true;
+  //         this.setBtnPodnesi(_btnOpozovi); // status = 3
+  //         this.evidProcesService._evidPodnesen = true;
+  //       } else if (this.evidProcesService._evdLockedExt == true && this.evidProcesService._evdPodnio == true) {
+  //         _btnOpozovi.enabled = false;
+  //         this.setBtnPodnesi(_btnOpozovi); // status = 3
+  //         this.evidProcesService._evidPodnesen = true;
+  //       } else if (this.evidProcesService._evdLockedExt == true && this.evidProcesService._evdPodnio == false) {
+  //         _btnPodnesi.enabled = false;
+  //         this.setBtnPodnesi(_btnPodnesi); // status = 1
+  //         this.evidProcesService._evidPodnesen = false;
+  //       }
+  //       break;
+  //     }
+  //   }
+  // }
 
   setGodOdm(value: EvidGodOdm) {
     this.godOdm = value;
@@ -410,13 +457,13 @@ export class EvidDnevnikService {
 
 
 
-  setBtnPodnesi(value: BtnPodnesi) {
-    this.btnPodnesiObs.next(value);
-  }
+  // setBtnPodnesi(value: BtnPodnesi) {
+  //   this.btnPodnesiObs.next(value);
+  // }
 
-  getBtnPodnesi(): Observable<BtnPodnesi> {
-    return this.btnPodnesiObs.asObservable();
-  }
+  // getBtnPodnesi(): Observable<BtnPodnesi> {
+  //   return this.btnPodnesiObs.asObservable();
+  // }
 
   getEvidPrisSifra = (): Observable<EvidSifra[]> => {
     return this.evidPrisSifraObs.asObservable();
@@ -527,7 +574,8 @@ export class EvidDnevnikService {
     // this._el = this._eDnevnikData.find(
     //   (el) => el.locked_ext === true || el.locked_ext === false
     // ) || new EvidDnevnik();
-    this._elInit();
+    console.log(`evid-dnevnik.service processEvidDnevnikExtData: ... `);
+    //this.evidProcesService.setFlags(this._eDnevnikData);
 
     this._eDnevnikDataClone = JSON.parse(JSON.stringify(this._eDnevnikData));
 
